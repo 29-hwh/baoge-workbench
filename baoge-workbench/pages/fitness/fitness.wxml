@@ -1,0 +1,316 @@
+<view class="page {{themeDark}}">
+  <!-- 视图切换：训练 / 身体（对齐读书页） -->
+  <view class="switch">
+    <view class="sw-item {{isTrain ? 'active' : ''}}" data-view="train" bindtap="switchTab">
+      💪 训练 <text class="sw-n">{{hero.days}}/周</text>
+    </view>
+    <view class="sw-item {{isBody ? 'active' : ''}}" data-view="body" bindtap="switchTab">
+      📈 身体 <text class="sw-n">{{bodyRecords.length}}条</text>
+    </view>
+  </view>
+
+  <!-- ===================== 训练视图 ===================== -->
+  <block wx:if="{{isTrain}}">
+    <!-- hero 统计（本周已练/本月容量/连续打卡） -->
+    <view class="card fit-hero">
+      <view class="hero-title">本周训练</view>
+      <view class="hero-line">
+        <text class="hero-num">{{hero.days}}</text>
+        <text class="hero-target">/ 目标 5 天</text>
+      </view>
+      <view class="progress"><view class="progress-bar fitness" style="width:{{hero.days >= 5 ? 100 : hero.days * 20}}%"></view></view>
+      <view class="muted mt-20">
+        本月完成 <text class="wk-num">{{hero.done}}</text> 次 · 容量 <text class="wk-num">{{hero.vol}}</text> kg
+        · 连续打卡 <text class="wk-num">{{hero.streak}}</text> 天
+      </view>
+    </view>
+
+    <block wx:if="{{workouts.length}}">
+      <view wx:for="{{workouts}}" wx:key="_id" class="card ft-card {{item.completed ? 'done' : ''}}">
+        <view class="ft-head">
+          <view class="ft-info">
+            <view class="ft-name">{{item.name}}</view>
+            <view class="muted ft-sub">{{item.dateLabel}}<text wx:if="{{item.showDate}}"> · {{item.date}}</text></view>
+          </view>
+          <view class="ft-meta">
+            <text class="tag {{item.completed ? 'learning' : (item.isToday ? 'fitness' : '')}}">{{item.statusLabel}}</text>
+          </view>
+        </view>
+
+        <view class="ft-progress">
+          <view class="muted">{{item.doneItems}}/{{item.totalItems}} 动作完成
+            <text wx:if="{{item.volumeText}}" class="ft-vol">· 🔋 容量 {{item.volumeText}}</text>
+            <text wx:if="{{item.timeText}}" class="ft-vol">· ⏱ {{item.timeText}}</text>
+          </view>
+          <view class="progress mt-20"><view class="progress-bar fitness" style="width:{{item.pct}}%"></view></view>
+        </view>
+
+        <block wx:if="{{item.items.length}}">
+          <view wx:for="{{item.items}}" wx:for-item="it" wx:for-index="ii" wx:key="_id"
+                class="ex-row {{it.done ? 'ex-done' : ''}}">
+            <view class="ex-dot {{it.done ? 'checked' : ''}}" catchtap="toggleItem"
+                  data-w="{{item._id}}" data-i="{{it._id}}">{{it.done ? '✓' : ''}}</view>
+            <view class="ex-info" bindtap="openSets" data-w="{{item._id}}" data-i="{{it._id}}">
+              <view class="ex-name">{{it.name}} <text class="ex-target">{{it.target}}</text></view>
+              <view class="ex-data">
+                <text wx:if="{{it.hasData}}" class="ex-rec">已录 {{it.setsText}}</text>
+                <text wx:else class="ex-norec">点此录入组数 · 重量</text>
+              </view>
+            </view>
+            <view class="ex-rec-btn" bindtap="openSets" data-w="{{item._id}}" data-i="{{it._id}}">
+              {{it.done ? '已完' : '录入'}}
+            </view>
+          </view>
+        </block>
+
+        <view class="ex-add" bindtap="openExSheet" data-w="{{item._id}}">+ 添加动作</view>
+        <view class="ft-foot">
+          <text class="ft-act" bindtap="manageWorkout" data-w="{{item._id}}">⋯ 管理训练</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- 历史训练专区（已完成训练统一收纳，默认折叠） -->
+    <view class="history-zone">
+      <view class="hist-head" bindtap="toggleHistory">
+        <view class="hist-title">📦 历史训练<text class="hist-count">{{historyWorkouts.length}}</text></view>
+        <view class="hist-caret">{{showHistory ? '收起 ▴' : '展开 ▾'}}</view>
+      </view>
+      <block wx:if="{{showHistory}}">
+        <block wx:if="{{historyWorkouts.length}}">
+          <!-- 2.1 长按卡片删除历史训练；2.2 成果速览 + 激励徽章 -->
+          <view wx:for="{{historyWorkouts}}" wx:key="_id" class="card ft-card done hist-card"
+                bindlongpress="delHistory" data-id="{{item._id}}">
+            <view class="ft-head">
+              <view class="ft-info">
+                <view class="ft-name">{{item.name}}</view>
+                <view class="muted ft-sub">{{item.dateLabel}}<text wx:if="{{item.showDate}}"> · {{item.date}}</text></view>
+              </view>
+              <view class="ft-meta"><text class="tag learning">已完成</text></view>
+            </view>
+            <view class="hist-stats">
+              <view class="hs-item" wx:if="{{item.volumeText}}">
+                <view class="hs-num">{{item.volume}}</view>
+                <view class="hs-lab">容量 kg</view>
+              </view>
+              <view class="hs-item" wx:if="{{item.durationMin}}">
+                <view class="hs-num">{{item.durationMin}}</view>
+                <view class="hs-lab">分钟</view>
+              </view>
+              <view class="hs-item">
+                <view class="hs-num">{{item.doneItems}}/{{item.totalItems}}</view>
+                <view class="hs-lab">动作</view>
+              </view>
+            </view>
+            <view class="hist-foot">
+              <text wx:if="{{item.monthSeq}}" class="hs-badge">💪 本月第 {{item.monthSeq}} 练</text>
+              <text wx:if="{{item.isMonthBest}}" class="hs-badge best">🔥 本月最大容量</text>
+              <text wx:if="{{item.volumeText}}" class="hs-vol">· 🔋 {{item.volumeText}}<text wx:if="{{item.timeText}}"> · ⏱ {{item.timeText}}</text></text>
+            </view>
+          </view>
+        </block>
+        <view wx:else class="hist-empty muted">还没有完成的训练</view>
+        <view wx:if="{{historyWorkouts.length}}" class="hist-tip muted">长按一条历史训练可删除</view>
+      </block>
+    </view>
+
+    <view wx:if="{{!workouts.length && !historyWorkouts.length}}" class="empty">
+      <view class="emoji">🏋</view>
+      <view>还没有训练记录</view>
+      <view class="muted" style="margin-top:8rpx;">点右下 ＋ 选三分化 / 新手训练模板，直接开练</view>
+    </view>
+  </block>
+
+  <!-- ===================== 身体视图 ===================== -->
+  <block wx:else>
+    <!-- 最新身体数据 hero -->
+    <view class="card fit-hero body-hero">
+      <view class="hero-title">最新身体数据</view>
+      <view class="bhero-row">
+        <view class="bhero-cell">
+          <view class="bhero-num">{{bodyHero.latest || '--'}}<text class="bhero-unit"> kg</text></view>
+          <view class="bhero-lab">体重<text wx:if="{{bodyHero.delta}}" class="bhero-delta">{{bodyHero.delta}}</text></view>
+        </view>
+        <view class="bhero-div"></view>
+        <view class="bhero-cell">
+          <view class="bhero-num">{{bodyHero.latestFat || '--'}}<text class="bhero-unit"> %</text></view>
+          <view class="bhero-lab">体脂</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 曲线：指标切换 + 时间维度 -->
+    <view class="card">
+      <view class="ch-metrics">
+        <view wx:for="{{metricOptions}}" wx:key="k" wx:for-item="mo"
+              class="chip {{chart.metric == mo.k ? 'on' : ''}}"
+              data-m="{{mo.k}}" bindtap="onBodyMetric">{{mo.text}}</view>
+      </view>
+      <view class="ch-head">
+        <view class="ch-title">{{chart.metricText}}走势 · {{chart.rangeText}}</view>
+        <view class="ch-ranges">
+          <view wx:for="{{rangeOptions}}" wx:key="k" wx:for-item="ro"
+                class="chip sm {{chart.range == ro.k ? 'on' : ''}}"
+                data-r="{{ro.k}}" bindtap="onBodyRange">{{ro.text}}</view>
+        </view>
+      </view>
+      <canvas wx:if="{{chart.canvas}}" canvas-id="trendCanvas" class="trend-canvas"></canvas>
+      <view wx:if="{{chart.empty}}" class="chart-empty">
+        {{chart.range == 'all' ? '还没有 {{chart.metricText}} 记录' : '该时段暂无 {{chart.metricText}} 记录'}}
+      </view>
+    </view>
+
+    <!-- 身体记录列表（新→旧，长按删除） -->
+    <block wx:if="{{bodyRecords.length}}">
+      <view wx:for="{{bodyRecords}}" wx:key="_id" class="card bd-row"
+            bindlongpress="delBody" data-id="{{item._id}}">
+        <view class="bd-date">
+          <view class="bd-d">{{item.label}}</view>
+          <view class="bd-d-sub muted">{{item.date}}</view>
+        </view>
+        <view class="bd-vals">
+          <view class="bd-val"><text class="bd-w">{{item.weightText || '--'}}</text></view>
+          <view class="bd-val muted">{{item.fatText || '未记体脂'}}</view>
+        </view>
+        <view class="bd-del muted">长按删</view>
+      </view>
+      <view class="muted" style="text-align:center;margin:6rpx 0 10rpx;">长按一条记录可删除</view>
+    </block>
+  </block>
+
+  <!-- ===== 新建训练：模板选择（三分化/五分化）+ 日期 ===== -->
+  <view wx:if="{{tmpl.show}}" class="mask" bindtap="closeTmpl">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">＋ 新建训练</view>
+      <view class="sh-row between">
+        <view class="sh-label">训练日期</view>
+        <view class="dp-label">{{tmpl.dateLabel}}</view>
+      </view>
+      <view class="date-chips">
+        <view wx:for="{{tmpl.dateChips}}" wx:key="iso" wx:for-index="ci"
+              class="date-chip {{tmpl.dateSel === ci ? 'on' : ''}} {{item.isToday ? 'today' : ''}}"
+              data-idx="{{ci}}" bindtap="onTmplChip">
+          <view class="dc-week">{{item.week}}</view>
+          <view class="dc-day">{{item.day}}</view>
+          <view wx:if="{{item.isTomorrow}}" class="dc-tag">明</view>
+          <view wx:elif="{{item.isToday}}" class="dc-tag">今</view>
+        </view>
+      </view>
+      <view class="dp-hint muted">选训练日（单日）· 默认今天；训练当天自动进今日待办，完成全部项目后同步</view>
+      <view class="tpl-group">
+        <view class="tpl-title">选个模板直接开练</view>
+        <view wx:for="{{tplList}}" wx:key="key" wx:for-item="tpl" wx:for-index="ti"
+              class="tpl-row" data-key="{{tpl.key}}" bindtap="pickTemplate">
+          <view class="tpl-emoji">{{tpl.emoji}}</view>
+          <view class="tpl-info">
+            <view class="tpl-name">{{tpl.split}} · {{tpl.name}}</view>
+            <view class="tpl-sub muted">{{tpl.moves.length}} 个动作 · 复合动作优先</view>
+          </view>
+          <view class="tpl-go">＋ 建卡</view>
+        </view>
+      </view>
+
+      <view wx:if="{{userTemplates.length}}" class="tpl-group">
+        <view class="tpl-title">⭐ 我的模板（收藏常用训练）</view>
+        <view wx:for="{{userTemplates}}" wx:key="_id" wx:for-item="ut" class="tpl-row">
+          <view class="tpl-emoji">⭐</view>
+          <view class="tpl-info" data-tid="{{ut._id}}" bindtap="pickUserTemplate">
+            <view class="tpl-name">{{ut.name}}</view>
+            <view class="tpl-sub muted">{{ut.items.length}} 个动作</view>
+          </view>
+          <view class="tpl-go" data-tid="{{ut._id}}" bindtap="pickUserTemplate">＋ 用</view>
+          <view class="tpl-del" data-tid="{{ut._id}}" catchtap="delUserTemplate">✕</view>
+        </view>
+      </view>
+      <view class="tpl-manual" bindtap="pickManual">✍ 手动空训练（自己取名，无模板）</view>
+      <view class="sh-actions">
+        <view class="sh-btn main" bindtap="closeTmpl">关 闭</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 逐组录入：每组次数/重量步进（±2.5kg 承重习惯）===== -->
+  <view wx:if="{{setE.show}}" class="mask" bindtap="closeSets">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">{{setE.name}}</view>
+      <view class="sh-sub muted">目标 {{setE.target}} · 上次重量已预填，点 +/- 微调</view>
+      <view wx:for="{{setE.sets}}" wx:key="index" wx:for-index="si" class="ss-set">
+        <view class="ss-idx">第{{si + 1}}组</view>
+        <view class="ss-ctl">
+          <view class="ss-btn" data-w="{{setE.wid}}" data-i="{{setE.iid}}" data-s="{{si}}" data-k="r" data-d="-1" bindtap="stepSet">−</view>
+          <view class="ss-val">{{item.reps}}<text class="ss-unit">次</text></view>
+          <view class="ss-btn" data-w="{{setE.wid}}" data-i="{{setE.iid}}" data-s="{{si}}" data-k="r" data-d="1" bindtap="stepSet">＋</view>
+        </view>
+        <view class="ss-ctl">
+          <view class="ss-btn" data-w="{{setE.wid}}" data-i="{{setE.iid}}" data-s="{{si}}" data-k="w" data-d="-2.5" bindtap="stepSet">−</view>
+          <view class="ss-val">{{item.weight}}<text class="ss-unit">kg</text></view>
+          <view class="ss-btn" data-w="{{setE.wid}}" data-i="{{setE.iid}}" data-s="{{si}}" data-k="w" data-d="2.5" bindtap="stepSet">＋</view>
+        </view>
+      </view>
+      <view class="rest-box">
+        <view class="rest-label">组间休息</view>
+        <view wx:if="{{setE.rest.active}}" class="rest-count">{{setE.rest.left}}s</view>
+        <view wx:else class="rest-count muted">未开始</view>
+        <view class="rest-btn {{setE.rest.active ? 'on' : ''}}" bindtap="{{setE.rest.active ? 'stopRest' : 'startRest'}}">
+          {{setE.rest.active ? '停止计时' : '开始 90s'}}
+        </view>
+      </view>
+      <view class="ss-tip muted">加重到超过历史最佳会自动弹 PR 💪 提醒</view>
+      <view class="sh-actions">
+        <view class="sh-btn ghost danger" bindtap="delFromEditor">删除动作</view>
+        <view class="sh-btn ghost" bindtap="toggleFromEditor">{{setE.done ? '取消完成' : '标记完成'}}</view>
+        <view class="sh-btn main" bindtap="closeSets">完 成</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 记录体重/体脂：单表单 ===== -->
+  <view wx:if="{{bodySheet.show}}" class="mask" bindtap="closeBodySheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">＋ 记录体重 / 体脂</view>
+      <view class="sh-row between">
+        <view class="sh-label">日期</view>
+        <view class="dp-label">{{bodySheet.dateLabel}}</view>
+      </view>
+      <picker-view class="dp-view" value="{{bodySheet.dpVal}}" bindchange="onBodyDpChange">
+        <picker-view-column><view wx:for="{{bodySheet.dpYears}}" wx:key="*this" class="dp-col">{{item}}年</view></picker-view-column>
+        <picker-view-column><view wx:for="{{bodySheet.dpMonths}}" wx:key="*this" class="dp-col">{{item}}月</view></picker-view-column>
+        <picker-view-column><view wx:for="{{bodySheet.dpDays}}" wx:key="*this" class="dp-col">{{item}}日</view></picker-view-column>
+      </picker-view>
+      <view class="dp-hint muted">只能选今天及以前的日期</view>
+      <view class="sh-row">
+        <view class="sh-label">体重（kg）<text class="fs-req">*必填</text></view>
+        <input class="sh-input" type="digit" placeholder="如 70.5" value="{{bodySheet.weight}}" bindinput="onWeightInput"/>
+      </view>
+      <view class="sh-row">
+        <view class="sh-label">体脂 %（选填）</view>
+        <input class="sh-input" type="digit" placeholder="如 18.5（可留空）" value="{{bodySheet.fat}}" bindinput="onFatInput"/>
+      </view>
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="closeBodySheet">取消</view>
+        <view class="sh-btn main" bindtap="saveBody">保存记录</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 添加动作：可滚动选择（替代超 6 项会失效的 actionSheet）===== -->
+  <view wx:if="{{exSheet.show}}" class="mask" bindtap="closeExSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">＋ 添加动作</view>
+      <view class="ex-search">
+        <input class="sh-input" placeholder="搜索动作，如 卧推" value="{{exSheet.query}}" bindinput="onExSearch"/>
+      </view>
+      <scroll-view scroll-y class="ex-list">
+        <view wx:for="{{exSheet.list}}" wx:key="*this" class="ex-opt" data-name="{{item}}" bindtap="pickEx">{{item}}</view>
+        <view wx:if="{{!exSheet.list.length}}" class="ex-empty muted">没有匹配的动作，可点下面自定义</view>
+        <view class="ex-opt custom" bindtap="pickExCustom">✍ 自定义动作</view>
+      </scroll-view>
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="closeExSheet">取消</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- FAB：训练视图=建训练 / 身体视图=记体重 -->
+  <view class="fab" bindtap="onFab">＋</view>
+</view>

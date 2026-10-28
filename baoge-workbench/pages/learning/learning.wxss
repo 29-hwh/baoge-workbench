@@ -1,0 +1,308 @@
+/* pages/learning/learning.wxss */
+
+.page {
+  padding: 32rpx;
+  padding-bottom: 160rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  margin: 16rpx 8rpx;
+}
+.section-title .meta {
+  font-size: 24rpx;
+  color: var(--c-text-3);
+  font-weight: 400;
+  margin-left: 8rpx;
+}
+
+.skill-card { padding: 24rpx 28rpx; }
+.skill-head {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.skill-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38rpx;
+  color: #fff;
+  flex-shrink: 0;
+}
+.skill-info { flex: 1; min-width: 0; }
+.skill-name {
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.skill-goal {
+  font-size: 22rpx;
+  color: var(--c-text-2);
+  margin-top: 4rpx;
+}
+/* 环形进度（conic-gradient 实现；旧基础库不支持时回退为整圈绿，中心数字仍可见） */
+.ring {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  background-color: var(--c-learning);   /* 兜底色 */
+}
+.ring .ring-hole {
+  position: absolute;
+  top: 14rpx; left: 14rpx; right: 14rpx; bottom: 14rpx;
+  border-radius: 50%;
+  background: var(--c-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--c-learning);
+  line-height: 1;
+  text-align: center;
+}
+
+.stage-list {
+  margin-top: 24rpx;
+  border-top: 0.5px solid var(--c-divider);
+  padding-top: 16rpx;
+}
+.stage {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 12rpx 0;
+}
+.stage-dot {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  color: transparent;
+  flex-shrink: 0;
+}
+.stage.stage-done .stage-dot {
+  background: var(--c-learning);
+  border-color: var(--c-learning);
+  color: #fff;
+}
+.stage-name {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--c-text-2);
+}
+.stage.stage-done .stage-name {
+  color: var(--c-text-3);
+  text-decoration: line-through;
+}
+
+/* 图鉴徽章 */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18rpx;
+  max-height: 52vh;        /* 图鉴徽章过多时上下滚动 */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.badge {
+  aspect-ratio: 1 / 1.2;
+  border-radius: 18rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 8rpx;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.08);
+}
+.badge-icon {
+  font-size: 56rpx;
+  margin-bottom: 6rpx;
+}
+.badge-name {
+  font-size: 22rpx;
+  font-weight: 500;
+  line-height: 1.3;
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.badge-date {
+  font-size: 18rpx;
+  opacity: 0.8;
+  margin-top: 4rpx;
+}
+
+/* P0 新增：单表单 / 阶段详情 / 达成回顾（模块色用学习绿；.mask/.sheet/.sh-* 基座已上提 app.wxss） */
+.sh-sub { font-size: 22rpx; color: var(--c-text-3); margin-left: 8rpx; }
+.sh-label { margin-top: 20rpx; }
+.sh-btn.main { background: var(--c-learning); color: #fff; }
+.fs-req { color: #E24B4A; font-size: 19rpx; margin-left: 6rpx; }
+.fs-opt { color: var(--c-text-3); font-size: 19rpx; margin-left: 6rpx; }
+
+/* 图标选择：两排，每排 7 个（不换行，保证整齐两行） */
+.form-icon-block { margin-top: 12rpx; }
+.form-icon-label {
+  font-size: 21rpx;
+  color: var(--c-text-3);
+  margin: 16rpx 0 10rpx;
+  padding-left: 4rpx;
+}
+.form-icon-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12rpx;
+  justify-content: space-between;
+}
+.form-icon {
+  flex: 1 1 0;
+  height: 76rpx;
+  border-radius: 16rpx;
+  background: var(--c-bg);
+  border: 1.5px solid var(--c-divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38rpx;
+  min-width: 0;
+}
+.form-icon.on { border-color: var(--c-learning); background: rgba(29,158,117,0.12); }
+
+/* 阶段编辑行（创建表单内） */
+.stage-edit-row { display: flex; align-items: center; gap: 12rpx; margin-top: 14rpx; }
+.stage-edit-row .sh-input { flex: 1; }
+.stage-del {
+  width: 56rpx; height: 56rpx; border-radius: 50%;
+  background: var(--c-bg); color: var(--c-text-3);
+  display: flex; align-items: center; justify-content: center; font-size: 28rpx; flex-shrink: 0;
+}
+.form-err { color: #E24B4A; font-size: 22rpx; margin-top: 14rpx; text-align: center; }
+
+/* 阶段正文 + 里程碑标记 */
+.stage-body { flex: 1; min-width: 0; }
+.stage-log { font-size: 20rpx; color: var(--c-learning); margin-top: 2rpx; }
+.stage-date { font-size: 20rpx; color: var(--c-text-3); margin-top: 2rpx; }
+.stage-add {
+  font-size: 23rpx; color: var(--c-learning); margin-top: 14rpx;
+  padding-top: 14rpx; border-top: 0.5px dashed var(--c-divider);
+}
+.stage-add.sm { font-size: 22rpx; }
+
+/* 里程碑备注输入与列表（.sh-area 基座已上提 app.wxss） */
+.log-list { margin-top: 18rpx; border-top: 0.5px solid var(--c-divider); padding-top: 12rpx; }
+.log-line { padding: 8rpx 0; border-bottom: 0.5px solid var(--c-divider); }
+.log-date { font-size: 20rpx; color: var(--c-text-3); }
+.log-text { font-size: 25rpx; color: var(--c-text); margin-top: 2rpx; }
+
+/* 达成回顾卡 */
+.detail-card {
+  width: 100%; max-width: 600rpx; background: #fff; border-radius: 16rpx;
+  padding: 36rpx 32rpx 28rpx; position: relative; overflow: hidden;
+}
+.detail-color { position: absolute; left: 0; top: 0; width: 100%; height: 10rpx; }
+.detail-title { font-size: 36rpx; font-weight: 500; margin-top: 8rpx; }
+.detail-meta { font-size: 22rpx; color: var(--c-text-3); margin-top: 8rpx; }
+.rev-done-at { font-size: 20rpx; color: var(--c-learning); font-weight: 400; margin-left: 8rpx; }
+.detail-review-title { font-size: 26rpx; font-weight: 500; margin-top: 24rpx; margin-bottom: 8rpx; }
+/* 达成回顾：阶段列表过长时上下滚动（图鉴详情） */
+.rev-scroll {
+  max-height: 40vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.rev-stage { padding: 12rpx 0; border-bottom: 0.5px solid var(--c-divider); }
+.rev-stage-name { font-size: 27rpx; color: var(--c-text); font-weight: 500; }
+.rev-logs { margin-top: 6rpx; }
+.rev-log { font-size: 23rpx; color: var(--c-text-2); line-height: 1.5; }
+.rev-empty { font-size: 22rpx; margin-top: 4rpx; }
+
+/* ===== 导出条（与读书页一致） ===== */
+.export-bar { margin: 4rpx 0 16rpx; }
+.export-link {
+  display: inline-block;
+  font-size: 23rpx;
+  color: var(--c-learning);
+  background: rgba(29,158,117,0.10);
+  border-radius: 999rpx;
+  padding: 10rpx 22rpx;
+}
+
+/* ===== 目标周期 / 每周节奏 ===== */
+.skill-cycle {
+  font-size: 20rpx;
+  color: var(--c-text-3);
+  margin-top: 10rpx;
+}
+
+/* ===== 成长记录时间线（与读书页一致） ===== */
+.record-entry {
+  margin-top: 18rpx;
+  padding: 16rpx 20rpx;
+  background: var(--c-bg);
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: var(--c-learning);
+}
+.rec-tag { color: var(--c-text-3); margin-left: 8rpx; font-size: 22rpx; }
+.rec-toggle {
+  font-size: 21rpx;
+  color: var(--c-text-3);
+  margin-top: 8rpx;
+  text-align: right;
+}
+.record-list {
+  margin-top: 12rpx;
+  border-top: 0.5px solid var(--c-divider);
+  padding-top: 12rpx;
+}
+.record-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: 12rpx 0;
+  position: relative;
+}
+.rec-dot {
+  width: 14rpx; height: 14rpx;
+  border-radius: 50%;
+  background: var(--c-learning);
+  margin-top: 10rpx;
+  flex-shrink: 0;
+}
+.rec-body { flex: 1; min-width: 0; }
+.rec-meta { font-size: 22rpx; color: var(--c-text-3); }
+.rec-note { font-size: 26rpx; color: var(--c-text); margin-top: 4rpx; line-height: 1.5; }
+.rec-del {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  color: #E24B4A;
+  background: rgba(226,75,74,0.10);
+  border-radius: 999rpx;
+  padding: 4rpx 16rpx;
+}
+.rec-count { font-size: 20rpx; text-align: right; margin-top: 6rpx; }
+
+/* 阶段模板套用按钮 */
+.tpl-apply {
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--c-primary);
+  background: #EEEDFE;
+  border-radius: 12rpx;
+  padding: 16rpx 0;
+  margin-top: 14rpx;
+}

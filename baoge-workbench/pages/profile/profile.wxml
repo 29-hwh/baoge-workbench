@@ -1,0 +1,185 @@
+<view class="page {{themeDark}}">
+  <!-- 总览统计 -->
+  <view class="card hero">
+    <view class="hero-row">
+      <view class="hero-cell">
+        <view class="hero-num">{{stats.reads}}</view>
+        <view class="hero-lab">本读完</view>
+      </view>
+      <view class="hero-cell">
+        <view class="hero-num">{{stats.badges}}</view>
+        <view class="hero-lab">技能徽章</view>
+      </view>
+      <view class="hero-cell">
+        <view class="hero-num">{{stats.workouts}}</view>
+        <view class="hero-lab">次训练</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 详细 -->
+  <view class="card">
+    <view class="card-title">数据汇总</view>
+    <view class="kv">
+      <text class="k">在读书籍</text><text class="v">{{stats.books}}</text>
+    </view>
+    <view class="kv">
+      <text class="k">已读书籍</text><text class="v">{{stats.reads}}</text>
+    </view>
+    <view class="kv">
+      <text class="k">在学技能</text><text class="v">{{stats.skills}}</text>
+    </view>
+    <view class="kv">
+      <text class="k">已达成技能</text><text class="v">{{stats.badges}}</text>
+    </view>
+    <view class="kv">
+      <text class="k">本周训练</text><text class="v">{{stats.weeklyWorkouts}} 次</text>
+    </view>
+    <view class="kv">
+      <text class="k">本地数据占用</text><text class="v">{{storageSizeText}}</text>
+    </view>
+  </view>
+
+  <!-- 备份与导出（一键搞定） -->
+  <view class="card">
+    <view class="card-title">备份与导出 <text class="tag">存到微信</text></view>
+    <view class="tip">数据只存在本机。发一份到「文件传输助手」，换手机或电脑上都能找回来。</view>
+
+    <!-- 一键备份：最显眼的主操作 -->
+    <view class="backup-cta" bindtap="exportToFile">
+      <view class="cta-icon">🔒</view>
+      <view class="cta-main">
+        <view class="cta-title">一键备份</view>
+        <view class="cta-sub">生成备份文件并发到微信（推荐）</view>
+      </view>
+      <view class="cta-go">›</view>
+    </view>
+
+    <view class="setting-row" bindtap="exportReport">
+      <view class="setting-info">
+      <view class="setting-name">📊 导出成长报告</view>
+      <view class="muted">本月 / 本年度 / 全部 · 长图优先，可分享</view>
+      </view>
+      <view class="chevron">›</view>
+    </view>
+
+    <view class="setting-row" bindtap="copyJson">
+      <view class="setting-info">
+        <view class="setting-name">💾 复制完整备份</view>
+        <view class="muted">复制完整 json，自己找地方存</view>
+      </view>
+      <view class="chevron">›</view>
+    </view>
+
+    <view class="last-backup {{backupWarn ? 'warn' : ''}}">
+      <block wx:if="{{lastBackupText}}">上次备份：{{lastBackupText}}</block>
+      <block wx:else>还没有备份过，建议现在做一次</block>
+    </view>
+    <view wx:if="{{backupWarn}}" class="backup-now" bindtap="exportToFile">⚠ 立即备份（超过 7 天未备份）</view>
+  </view>
+
+  <!-- 云备份（暂未开放：仅占位入口） -->
+  <view class="card">
+    <view class="card-title">☁ 云备份 <text class="tag tag-cloud">即将上线</text></view>
+    <view class="tip">多设备自动同步。规划中，当前暂未开放。</view>
+    <view class="setting-row disabled" bindtap="cloudComingSoon">
+      <view class="setting-info">
+        <view class="setting-name">云备份</view>
+        <view class="muted">多设备同步 · 功能升级中</view>
+      </view>
+      <view class="chevron">›</view>
+    </view>
+  </view>
+
+  <!-- 恢复 -->
+  <view class="card">
+    <view class="card-title">恢复数据</view>
+    <view class="tip warn-tip">恢复会覆盖当前数据，但我会先自动把当前数据备份到剪贴板，可随时找回。</view>
+
+    <view class="setting-row" bindtap="importFromFile">
+      <view class="setting-info">
+        <view class="setting-name">从微信文件恢复</view>
+        <view class="muted">在聊天记录里选备份文件</view>
+      </view>
+      <view class="chevron">›</view>
+    </view>
+
+    <view class="setting-row" bindtap="importFromClipboard">
+      <view class="setting-info">
+        <view class="setting-name">从剪贴板恢复</view>
+        <view class="muted">先复制备份全文再用这个</view>
+      </view>
+      <view class="chevron">›</view>
+    </view>
+  </view>
+
+  <!-- 数据瘦身 -->
+  <view class="card">
+    <view class="card-title">🧹 数据瘦身</view>
+    <view class="tip">备份文件过大时，先看清谁占得多，再精准清理。清理前会先把被删数据复制成归档，随时能找回。</view>
+
+    <view class="setting-row" bindtap="toggleCleanup">
+      <view class="setting-info">
+        <view class="setting-name">查看各表占用</view>
+        <view class="muted">{{cleanup.open ? '点击收起' : '看看是哪张表撑大了备份'}}</view>
+      </view>
+      <view class="chevron">{{cleanup.open ? '⌄' : '›'}}</view>
+    </view>
+
+    <view wx:if="{{cleanup.open}}" class="clean-box">
+      <view class="clean-total {{cleanup.overSized ? 'warn' : ''}}">
+        <text class="clean-total-num">当前占用 {{cleanup.totalText}}</text>
+        <text wx:if="{{cleanup.overSized}}" class="clean-total-tip">超过建议上限 {{cleanup.thresholdText}}，导入可能失败</text>
+        <text wx:else class="clean-total-tip">体积正常，无需清理</text>
+      </view>
+
+      <view wx:if="{{cleanup.overSized}}" class="clean-action" bindtap="suggestClean">
+        🧹 一键瘦身到 {{cleanup.thresholdText}} 以下
+      </view>
+
+      <view class="clean-list">
+        <view class="clean-row" wx:for="{{cleanup.items}}" wx:key="key"
+              data-key="{{item.key}}" data-mode="{{item.mode}}" data-name="{{item.name}}"
+              bindtap="pickClean">
+          <view class="clean-row-top">
+            <text class="clean-name">{{item.name}}</text>
+            <text class="clean-size">{{item.sizeText}} · {{item.pct}}%</text>
+          </view>
+          <view class="clean-bar"><view class="clean-bar-in" style="width:{{item.pct}}%"></view></view>
+          <view class="clean-row-sub">{{item.count}} 条 · 点击选择清理方式 ›</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 外观 -->
+  <view class="card">
+    <view class="card-title">外观</view>
+    <view class="setting-row">
+      <view class="setting-info">
+        <view class="setting-name">暗色模式</view>
+        <view class="muted">夜间使用更舒服（本地开关，与云同步无关）</view>
+      </view>
+      <switch checked="{{dark}}" bindchange="toggleDark" color="#534AB7"/>
+    </view>
+  </view>
+
+  <!-- 危险区 -->
+  <view class="card">
+    <view class="setting-row" bindtap="clearAll">
+      <view class="setting-info">
+        <view class="setting-name danger">清空全部数据</view>
+        <view class="muted">不可恢复，请先备份</view>
+      </view>
+      <view class="chevron">›</view>
+    </view>
+  </view>
+
+  <view class="about">
+    <view>宝哥工作台 {{version}}</view>
+    <view class="muted">个人成长工作台 · 本地优先 · 微信备份</view>
+  </view>
+
+  <!-- 成长报告长图画布（离屏，导出时按内容动态设高度） -->
+  <canvas canvas-id="reportCard" class="report-canvas" style="height:{{reportCanvasH}}px;"></canvas>
+</view>

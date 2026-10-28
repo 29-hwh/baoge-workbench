@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="gDHxwfKlzDDvlzzw57wl7i">
+<head data-page-node-id="1eXlrCMZIMAAusBiSmnVlE">
+<meta charset="UTF-8" data-page-node-id="iYh0942RKnNXAdOLqFhQi0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="1ABj1XsyF8840WYMX6ioDi">
+<title>本周待办 · 徽章统一前后对照</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: #eef0f3; color: #2b2f36; padding: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 22px;
+  }
+  h1 { font-size: 15px; font-weight: 600; }
+  .note { font-size: 12px; color: #6b7280; max-width: 400px; line-height: 1.6; }
+  .cols { display: flex; gap: 26px; flex-wrap: wrap; justify-content: center; }
+  .frame { background: #f4f5f7; border-radius: 20px; padding: 10px; box-shadow: 0 6px 18px rgba(30,40,60,.10); }
+  .phone { width: 343px; background: #fff; border-radius: 14px; padding: 14px 0 10px; }
+  .ph-head { display: flex; justify-content: space-between; align-items: baseline; padding: 0 16px 12px; }
+  .ph-title { font-size: 15px; font-weight: 700; }
+  .ph-meta { font-size: 11px; color: #9aa1ab; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 999px; margin-bottom: 2px; }
+  .tag.before { background: #fdeaea; color: #c0392b; }
+  .tag.after  { background: #e7f5ee; color: #1f8a5f; }
+  .week-grid { display: flex; align-items: flex-end; justify-content: space-between; gap: 3px; padding: 0 10px; }
+  .wk-cell { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 3px 1px; border-radius: 5px; }
+  .wk-cell.today { background: rgba(226,75,74,0.06); }
+  /* 轨道 24x56rpx -> 12x28px */
+  .wk-track { position: relative; height: 28px; width: 12px; border-radius: 4px; background: #E24B4A; overflow: hidden; }
+  .wk-track.empty { background: #E6E8EC; }
+  .wk-fill { position: absolute; left: 0; bottom: 0; width: 100%; background: #79C99E; }
+  .wk-day { display: flex; flex-direction: column; align-items: center; height: 36px; }
+  .wk-dchar { font-size: 10px; line-height: 1; height: 10px; color: #9aa1ab; }
+  .wk-cell.today .wk-dchar { color: #E24B4A; font-weight: 600; }
+  .wk-count {
+    min-width: 17px; height: 15px; line-height: 15px; padding: 0 4px; margin-top: 4px;
+    text-align: center; border-radius: 999px; background: rgba(0,0,0,0.06);
+    color: #5c6470; font-size: 9px; font-weight: 600; font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  .wk-count.zero { background: transparent; color: #d9d6cd; font-size: 8px; font-weight: 400; }
+  .wk-cell.today .wk-count { background: rgba(226,75,74,0.12); color: #E24B4A; }
+  .wk-cell.today .wk-count.zero { background: transparent; color: #d9d6cd; }
+  .legend { display: flex; gap: 12px; justify-content: center; font-size: 10px; color: #8a919c; padding-top: 12px; border-top: 1px dashed #e5e7eb; margin: 0 14px; }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+</style>
+</head>
+<body data-page-node-id="tuEaZiUqzNarj6TTKBGuNq">
+  <h1 data-page-node-id="QbyTdZC2rLzuUYpBqrCZvT">本周待办 · 徽章统一前后对照（1rpx ≈ 0.5px）</h1>
+  <div class="note" data-page-node-id="t3xNNwQ0hucXxfLm3kprAx">同一份数据（今天周四 · 已完成 7/16）。<b data-page-node-id="yigLf1xqxo60lMOnglsFmH">修改前</b>：无任务的天不显示底部徽章，且徽章忽隐忽现，七列底部参差、大小比例不统一。<b data-page-node-id="cJzH6ShBMzGUOkPJXKk2gg">修改后</b>：七列始终渲染同规格胶囊——有任务显示数字、无任务显示淡灰「·」，宽度高度全部对齐。</div>
+  <div class="cols" data-page-node-id="Qz33ooS7T3nTkMWP8Z5Az7">
+
+    <!-- 修改前 -->
+    <div class="frame" data-page-node-id="rp6c0nMpXj6OTMCp3CrO4s">
+      <div class="tag before" data-page-node-id="wAA0Sz6inuQpmpOeW86Nzk">修改前 · wk-count 仅在有任务时渲染</div>
+      <div class="phone" data-page-node-id="hScZSrTdOleoTZtSnzkjRH">
+        <div class="ph-head" data-page-node-id="sy0r3ZFqiI1pL17EnvqwhD">
+          <div class="ph-title" data-page-node-id="AjJ5SbJtm1v7lJ8aSvrMsK">本周待办</div>
+          <div class="ph-meta" data-page-node-id="2K8nVFHsKaxQJW3PaXhlUM">今日还有 1 件</div>
+        </div>
+        <div class="week-grid" data-page-node-id="9bPppKNKVv7BQL51szAL78">
+          <div class="wk-cell" data-page-node-id="7AXyTNpMLWNVqkQwErDcV6"><div class="wk-track" data-page-node-id="3eGeWarI9FNQiVxeAUN68V"><div class="wk-fill" style="height:25%" data-page-node-id="04M8ikfmbWWggqdEPRukRm"></div></div><div class="wk-day" data-page-node-id="tIKsFpwgpUpMIjOC4aFQhM"><div class="wk-dchar" data-page-node-id="Cnv217VgT02lBy0DQlsRL9">一</div><div class="wk-count" data-page-node-id="LrxrySFFvtUBxijQmMA3H3">4</div></div></div>
+          <div class="wk-cell wk-empty" data-page-node-id="Vr9FWMXwhWFemgCHq6gsOH"><div class="wk-track empty" data-page-node-id="c1xwCAWMi7xr4IVvqikUAh"></div><div class="wk-day" data-page-node-id="mf2IQXFJBFfqDsghKO9CLy"><div class="wk-dchar" style="color:#cfccc3" data-page-node-id="pAPz6dtzZlq49KgbvVzNhF">二</div></div></div>
+          <div class="wk-cell" data-page-node-id="siz4a3YfoEtn9v23DMZO9y"><div class="wk-track" data-page-node-id="ZgC1k4nH368w07CpmoGS37"><div class="wk-fill" style="height:67%" data-page-node-id="o8egJrtsRcwj0DGA1Px2nk"></div></div><div class="wk-day" data-page-node-id="NPl8JiZ9k2QhccIP8aPB2g"><div class="wk-dchar" data-page-node-id="Y9gvPW4R0l1meKyPcQSY9r">三</div><div class="wk-count" data-page-node-id="rjhF1JUq6QcIRTUqLGDCC6">6</div></div></div>
+          <div class="wk-cell today" data-page-node-id="l9MsxtXq9JA3Fk2XgEU9qi"><div class="wk-track" data-page-node-id="8Hq67FCYaFvzqNeoqnqd8A"><div class="wk-fill" style="height:50%" data-page-node-id="e806UD80Uq2Mv56SN4rRT7"></div></div><div class="wk-day" data-page-node-id="PZmErp9pzUvUXD7ewt2jRf"><div class="wk-dchar" data-page-node-id="fnDEzBCb7wMhNe7EQdIeAC">四</div><div class="wk-count" data-page-node-id="sZTMtKQ6pSjoKtxBGGuaKT">2</div></div></div>
+          <div class="wk-cell wk-empty" data-page-node-id="ry3X2rfRAvMpMwnIi7OvfM"><div class="wk-track empty" data-page-node-id="fXv9ZzT3sefsC3elFkzGSB"></div><div class="wk-day" data-page-node-id="BqvqNO1bQyunFs7TUy8vD9"><div class="wk-dchar" style="color:#cfccc3" data-page-node-id="tI0iPOMM8dm9Tvd8iMBdw1">五</div></div></div>
+          <div class="wk-cell" data-page-node-id="qHJUTDG4V0hDCgZdjkjP0w"><div class="wk-track" data-page-node-id="KotdzBWxLwP2duSh4cIExh"></div><div class="wk-day" data-page-node-id="kHeCntlVxpHyoleOxgjDTJ"><div class="wk-dchar" data-page-node-id="4gBPlF81FnnCSQakVEYNPy">六</div><div class="wk-count" data-page-node-id="6kcm2wtXA5BoT8QvAyw9eP">3</div></div></div>
+          <div class="wk-cell" data-page-node-id="GpVfWnumDXY2kZzyoWdfb0"><div class="wk-track" data-page-node-id="9XK3yIURxvECGXx02817vf"><div class="wk-fill" style="height:100%" data-page-node-id="j3s4rWtWhQPtThjhov6lay"></div></div><div class="wk-day" data-page-node-id="JDDKoW1xJoP53EeQR9Cmxz"><div class="wk-dchar" data-page-node-id="aRjkEYu26TeTeOWbsevbpx">日</div><div class="wk-count" data-page-node-id="l7E2944hjaK0XQW6uSowNh">1</div></div></div>
+        </div>
+        <div class="legend" data-page-node-id="mIsDWKSUnO37JU5QVdlFts"><span data-page-node-id="ovadePMHbVL5WL8c0N94zI"><i style="background:#E24B4A" data-page-node-id="RpqgmXEFvDRB6pbGnYjjck"></i>未完成</span><span data-page-node-id="0MHqEb68VAcUyeBw42atyq"><i style="background:#79C99E" data-page-node-id="ZPblTFphsA4E2ocfnJTCxu"></i>已完成</span><span data-page-node-id="FtFYpSFHH6aEgHQiVLCujB"><i style="background:#E6E8EC" data-page-node-id="DekNtdB1WcqckqnOpwLO9d"></i>无任务</span></div>
+      </div>
+    </div>
+
+    <!-- 修改后 -->
+    <div class="frame" data-page-node-id="r7uczD0EKujWZDBlVY3r9q">
+      <div class="tag after" data-page-node-id="3tX4pXtv7RzdVV8vDbasoN">修改后 · 七列恒显同规格徽章（数字 / 「·」）</div>
+      <div class="phone" data-page-node-id="8oTomUaiR7gduRLzGBCJwo">
+        <div class="ph-head" data-page-node-id="NAgz4742Mwm5bycwvtQKBD">
+          <div class="ph-title" data-page-node-id="AB6DvLGENm4WNTrzboDZjZ">本周待办</div>
+          <div class="ph-meta" data-page-node-id="vjykq1Z98T9o1LFoQCbJXI">今日还有 1 件</div>
+        </div>
+        <div class="week-grid" data-page-node-id="50hyhWa9x6hgAutPmiHi5q">
+          <div class="wk-cell" data-page-node-id="Nk1eDKwXpekF4wqvNiNcj1"><div class="wk-track" data-page-node-id="e72un9CKgcHVtyxANJcTdu"><div class="wk-fill" style="height:25%" data-page-node-id="R5iCSybvXV1NciZdjLA0lH"></div></div><div class="wk-day" data-page-node-id="SgR9e3Ch0k95CBIkO669J4"><div class="wk-dchar" data-page-node-id="rjUe8BnYFLI3pLsN1340Op">一</div><div class="wk-count" data-page-node-id="oT4gAPRsQTfP1qnl79prZ7">4</div></div></div>
+          <div class="wk-cell" data-page-node-id="g93IByTgcmsJVwpEGyJQBW"><div class="wk-track empty" data-page-node-id="T7RGUDq7021LgptvBfy9br"></div><div class="wk-day" data-page-node-id="oDPYN2sA4aOszOF0ZkE1u0"><div class="wk-dchar" data-page-node-id="YjFjXpUp70RCeFaS5pZLA2">二</div><div class="wk-count zero" data-page-node-id="hDXrlx2c7PEWFiFV0HmSWW">·</div></div></div>
+          <div class="wk-cell" data-page-node-id="lVqka1ruattc9MR2F9wbFF"><div class="wk-track" data-page-node-id="gGQji7F7Ecpw3GdxXcHYsl"><div class="wk-fill" style="height:67%" data-page-node-id="SrKJTIYZwjGuDlFYQPpzfd"></div></div><div class="wk-day" data-page-node-id="U2LWcKdaGxIkeNZ68g86fy"><div class="wk-dchar" data-page-node-id="FaMPwshU9CV6xJA8EhdeUQ">三</div><div class="wk-count" data-page-node-id="SKuDS0HMxAcEM4xDnKyOEy">6</div></div></div>
+          <div class="wk-cell today" data-page-node-id="Xh1gjepXB35EREZlqUIx57"><div class="wk-track" data-page-node-id="4aFZyWfINOp8ESXNROrdeM"><div class="wk-fill" style="height:50%" data-page-node-id="IYeqKN6q66UCgAcQxh1QRB"></div></div><div class="wk-day" data-page-node-id="DFI8v2yllndDyqwryQWQ2N"><div class="wk-dchar" data-page-node-id="H0WZvSKk8x3cOgd0KeJNZu">四</div><div class="wk-count" data-page-node-id="hVokjBsAcFIjSwwQn3ITCw">2</div></div></div>
+          <div class="wk-cell" data-page-node-id="9YEguE7NXksGMNw8e3RMlb"><div class="wk-track empty" data-page-node-id="MluRlBwxtn2MSqdVMUXajz"></div><div class="wk-day" data-page-node-id="02aHqDghkMESuRdTg9aZwN"><div class="wk-dchar" data-page-node-id="RG5Ly17k3yDoPAlgPv42mt">五</div><div class="wk-count zero" data-page-node-id="dFTbX87CYu0xetPpKNMgMJ">·</div></div></div>
+          <div class="wk-cell" data-page-node-id="yvjwILUDEd2lJDS7uAe1CH"><div class="wk-track" data-page-node-id="CvpDqwWFmNJYMtxcguzaiX"></div><div class="wk-day" data-page-node-id="LLMOGwSrSQ8inYHs9Rsq7g"><div class="wk-dchar" data-page-node-id="fbQANcDxLxn9oAj6EjrKg3">六</div><div class="wk-count" data-page-node-id="TnzQhegOhJe5XVkHzRldkN">3</div></div></div>
+          <div class="wk-cell" data-page-node-id="jk1EMS3X09B8NfOTqfGXnt"><div class="wk-track" data-page-node-id="IhSUjwn0VSCeVQv5anUfhf"><div class="wk-fill" style="height:100%" data-page-node-id="7If1QRQO1G6g4heauXxCU6"></div></div><div class="wk-day" data-page-node-id="JA7bY73V8IIN91slymXAjO"><div class="wk-dchar" data-page-node-id="FkuLdSS9jNQuJpBmCFCA3L">日</div><div class="wk-count" data-page-node-id="AbMVTOPqGCK1vkhRWmDE88">1</div></div></div>
+        </div>
+        <div class="legend" data-page-node-id="kHQ8aPlB8tNwJSgAdHoGSJ"><span data-page-node-id="Vk2FZBvw8IdHjleCH0bjCZ"><i style="background:#E24B4A" data-page-node-id="OkdiNP4IAF6hFHrLcYCLY2"></i>未完成</span><span data-page-node-id="dvjzf1FZg5C5CxHFGNCygO"><i style="background:#79C99E" data-page-node-id="UuCGeJcRbT9UL2yRoFBv1T"></i>已完成</span><span data-page-node-id="B1TQeobXt4ud3G29UA6Jxu"><i style="background:#E6E8EC" data-page-node-id="lIRsNTaWV41Z9HFKtVLyLY"></i>无任务</span></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

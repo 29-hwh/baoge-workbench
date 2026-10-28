@@ -1,0 +1,26 @@
+# ===== 微信开发者工具个人配置（每台机器不同，不入库）=====
+project.private.config.json
+
+# ===== 备份压缩包 =====
+*.zip
+*.7z
+*.rar
+*.tar.gz
+
+# ===== 依赖 / 构建产物 =====
+node_modules/
+miniprogram_npm/
+dist/
+.cache/
+
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+*~
+*.swp
+.idea/
+.vscode/
+*.iml
+
+# ===== 日志 =====
+*.log

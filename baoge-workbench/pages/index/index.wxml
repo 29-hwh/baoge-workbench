@@ -1,0 +1,330 @@
+<view class="page {{themeDark}}">
+  <!-- 日期栏 + 日期切换 -->
+  <view class="datebar">
+    <view class="date-nav" bindtap="shiftDay" data-dir="-1">‹</view>
+    <view class="date-center">
+      <view class="date-label" bindtap="openDateSheet">{{dateLabel}} <text class="date-caret">▾</text></view>
+      <view wx:if="{{!isToday}}" class="jump-today" bindtap="jumpToday">回到今天</view>
+      <view wx:else class="muted-date">今天 · 执行台</view>
+    </view>
+    <view class="date-nav" bindtap="shiftDay" data-dir="1">›</view>
+  </view>
+
+  <!-- 读书目标日提醒（打通读书页） -->
+  <view wx:if="{{readingAlert}}" class="alert-bar" bindtap="goReading">
+    ⏰ {{readingAlert}} ›
+  </view>
+
+  <!-- 今日待办 -->
+  <view class="card">
+    <view class="card-title">
+      <text>{{isToday ? '今日待办' : (isFuture ? '预定待办' : '历史待办')}}
+        <text class="meta">{{pendingCount}} 待完成</text></text>
+      <view wx:if="{{isToday || isFuture}}" class="add" bindtap="openTodoSheet" hover-class="add-hover">
+        <text class="add-ico">＋</text>记一笔
+      </view>
+    </view>
+
+    <!-- 待办列表：未完成自动置顶 → 已完成随后（单一列表，无分组标题/容器；来源由每条 src-pill 图标辨识） -->
+    <block wx:if="{{todoList.length}}">
+      <view wx:for="{{todoList}}" wx:key="_id"
+            class="todo {{item.done ? 'done' : ''}} {{item.important ? 'imp' : ''}}"
+            data-id="{{item._id}}"
+            bindlongpress="delTodo" bindtap="openTodo">
+        <view class="check {{item.done ? 'checked' : ''}}" catchtap="toggleTodo" data-id="{{item._id}}">{{item.done ? '✓' : ''}}</view>
+        <view class="todo-body">
+          <view class="todo-title">
+            <text wx:if="{{item.important}}" class="imp-star">★</text>{{item.title}}
+          </view>
+          <view class="todo-desc">{{item.desc}}</view>
+        </view>
+        <view wx:if="{{item.icon}}" class="src-pill" style="background:{{item.iconBg}};color:{{item.iconColor}}">{{item.icon}}</view>
+        <view wx:else class="src-pill manual">✍</view>
+      </view>
+      <view class="todo-tip">单击完成 · 已完成的再点一次可取消 · 点文字看详情 · 长按删除/移除</view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="emoji">{{isToday ? '📭' : '🗓'}}</view>
+      <view>{{isToday ? '今天很清爽 🎉' : '这一天还没有记录'}}</view>
+      <view wx:if="{{isToday && emptyQuote}}" class="empty-quote">「{{emptyQuote}}」</view>
+      <view wx:if="{{isToday}}" class="empty-guide">
+        <view class="eg-btn" bindtap="goReading">📖 读一本</view>
+        <view class="eg-btn" bindtap="goLearning">🎯 立个技能</view>
+        <view class="eg-btn" bindtap="goFitness">🏋 练一组</view>
+      </view>
+      <view wx:else class="muted" style="margin-top:8rpx;">点右上角可预定未来的事</view>
+    </view>
+  </view>
+
+  <!-- 本周成长速览（v0.10：自然周成果汇报，三卡均为"本周真实发生"口径） -->
+  <view class="card">
+    <view class="card-title">
+      <text>本周成长速览</text>
+      <text class="meta">{{overview.weekLabel}}</text>
+    </view>
+    <view class="overview">
+      <view class="ov-item {{overview.reading.alert ? 'alert' : ''}}" bindtap="goReading">
+        <view class="ov-label">📚 读书</view>
+        <view class="ov-num">{{overview.reading.days}}<text class="ov-unit">天翻阅</text></view>
+        <view class="ov-sub">{{overview.reading.sub}}</view>
+        <view class="progress"><view class="progress-bar reading" style="width:{{overview.reading.percent}}%"></view></view>
+      </view>
+      <view class="ov-item" bindtap="goFitness">
+        <view class="ov-label">🏋 健身</view>
+        <view class="ov-num">{{overview.fitness.times}}<text class="ov-unit">次</text></view>
+        <view class="ov-sub">{{overview.fitness.sub}}</view>
+        <view class="progress"><view class="progress-bar fitness" style="width:{{overview.fitness.percent}}%"></view></view>
+      </view>
+      <view class="ov-item" bindtap="goLearning">
+        <view class="ov-label">🎯 学习</view>
+        <view class="ov-num">{{overview.learning.stages}}<text class="ov-unit">阶段</text></view>
+        <view class="ov-sub">{{overview.learning.sub}}</view>
+        <view class="progress"><view class="progress-bar learning" style="width:{{overview.learning.percent}}%"></view></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 周待办（固定7天：昨天 + 今天 + 后5天） -->
+  <view class="card week-card">
+    <view class="card-title">
+      <text>本周待办</text>
+      <text class="meta" wx:if="{{week.rate.total}}">本周完成 {{week.rate.done}}/{{week.rate.total}}（{{week.rate.pct}}%）</text>
+      <text class="meta" wx:else>这周也要加油</text>
+    </view>
+    <view class="week-grid">
+      <view wx:for="{{week.cells}}" wx:key="iso"
+            class="wk-cell {{item.cls}} {{item.isSel ? 'sel' : ''}}" bindtap="gotoDay" data-iso="{{item.iso}}">
+        <view class="wk-track">
+          <view wx:if="{{item.count}}" class="wk-red" style="height:{{item.incomplete}}%;"></view>
+          <view wx:if="{{item.count}}" class="wk-green" style="height:{{item.pct}}%;"></view>
+        </view>
+        <view class="wk-day">
+          <view class="wk-dchar">{{item.dchar}}</view>
+          <view class="wk-count {{item.count ? '' : 'zero'}}">{{item.count || '·'}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 倒计时卡片 -->
+  <view class="card">
+    <view class="card-title">
+      <text>⏳ 倒计时</text>
+      <view class="add" bindtap="openCdSheet" hover-class="add-hover">
+        <text class="add-ico">＋</text>添加
+      </view>
+    </view>
+    <block wx:if="{{countdown.length}}">
+      <view wx:for="{{countdown}}" wx:key="_id"
+            class="cd-item" bindlongpress="delCountdown" data-id="{{item._id}}">
+        <view class="cd-info">
+          <view class="cd-name">{{item.name}}
+            <text wx:if="{{item.annual}}" class="cd-tag">每年</text>
+          </view>
+          <view wx:if="{{item.desc}}" class="cd-desc">{{item.desc}}</view>
+          <view class="cd-date">{{item.dateLabel}}</view>
+          <view wx:if="{{item.lunar}}" class="cd-lunar">{{item.lunar}}</view>
+        </view>
+        <view class="cd-days {{item.cls}}">
+          <block wx:if="{{item.left >= 0}}">
+            <text class="cd-num">{{item.left}}</text><text class="cd-unit">天</text>
+          </block>
+          <text wx:else class="cd-unit">已过</text>
+        </view>
+      </view>
+    </block>
+    <view wx:else class="empty" style="padding:32rpx 0;">
+      <view style="font-size:22rpx;color:var(--c-text-3);">还没有倒计时 · 长按可删除</view>
+    </view>
+  </view>
+
+  <!-- ===== 手动待办详情 ===== -->
+  <view wx:if="{{todoDetail}}" class="mask" bindtap="closeTodoDetail">
+    <view class="form-sheet" catchtap="noop">
+      <view class="fs-title">📋 待办详情</view>
+      <view class="td-row">
+        <view class="td-label">事件名称</view>
+        <view class="td-text">{{todoDetail.title}}</view>
+      </view>
+      <view class="td-row">
+        <view class="td-label">事件详情</view>
+        <view class="td-text">{{todoDetail.desc}}</view>
+      </view>
+      <view class="td-row">
+        <view class="td-label">时间</view>
+        <view class="td-text">{{todoDetail.dateLabel}}
+          <text class="td-state {{todoDetail.done ? 'on' : ''}}">{{todoDetail.doneLabel}}</text>
+          <text wx:if="{{todoDetail.important}}" class="td-state imp">重要</text>
+        </view>
+      </view>
+      <view class="fs-actions">
+        <view class="fs-btn ghost" bindtap="toggleFromDetail">{{todoDetail.done ? '取消勾选' : '标记完成'}}</view>
+        <view class="fs-btn ghost danger" bindtap="deleteFromDetail">删除</view>
+        <view class="fs-btn main" bindtap="closeTodoDetail">收 起</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 加待办：单表单（名称/详情/日期/重要星标）===== -->
+  <view wx:if="{{todoSheet.show}}" class="mask" bindtap="closeTodoSheet">
+    <view class="form-sheet" catchtap="noop">
+      <view class="fs-title">＋ 记一笔待办</view>
+      <view class="fs-row">
+        <view class="fs-label">事件名称 <text class="fs-req">*必填</text></view>
+        <input class="fs-input" placeholder="比如：给客户回样片" maxlength="40"
+               value="{{todoSheet.title}}" bindinput="onTodoTitleInput"/>
+      </view>
+      <view class="fs-row">
+        <view class="fs-label">事件详情 <text class="fs-opt">选填</text></view>
+        <textarea class="fs-area" placeholder="补充说明 / 备注（可留空）" maxlength="200" auto-height
+                  value="{{todoSheet.desc}}" bindinput="onTodoDescInput"/>
+      </view>
+      <view class="fs-row between">
+        <view class="fs-label">重要 <text class="fs-opt">置顶+红标</text></view>
+        <view class="star-toggle {{todoSheet.important ? 'on' : ''}}" bindtap="toggleImportant">{{todoSheet.important ? '★' : '☆'}}</view>
+      </view>
+      <!-- 1.1 记一笔日期：横向换行网格（昨天/今天/明天 + 后续共 10 天，沿水平逐行铺开并自适应屏宽；杜绝纵向堆叠把表单撑高） -->
+      <view class="fs-row">
+        <view class="fs-label">日期 <text class="fs-req">*必填</text></view>
+        <view class="date-chips wrap inline">
+          <view wx:for="{{todoSheet.dateChips}}" wx:key="iso" wx:for-index="ci"
+                class="date-chip {{todoSheet.dateSel === ci ? 'on' : ''}} {{item.isToday ? 'today' : ''}} {{item.isFuture ? 'future' : ''}}"
+                data-idx="{{ci}}" bindtap="onTodoChip">
+            <view class="dc-label">{{item.label}}</view>
+            <view class="dc-sub">{{item.sub}}</view>
+          </view>
+        </view>
+        <!-- 1.2 自定义日期：触发行 + 可折叠内联小日历（简约 · 便捷 · 美观） -->
+        <view class="custom-date {{todoSheet.customDate ? 'on' : ''}}" bindtap="toggleTodoCal">
+          <view class="cd-left">📅 <text class="cd-clabel">{{todoSheet.customDate ? '已选自定义日期' : '自定义日期'}}</text></view>
+          <view class="cd-right">{{todoSheet.customDate ? todoSheet.dateLabel : '选其他日期 ›'}}</view>
+        </view>
+        <view wx:if="{{todoSheet.calShow}}" class="cal mini">
+          <view class="cal-head">
+            <view class="cal-nav" catchtap="onTodoCalPrev">‹</view>
+            <view class="cal-title">{{todoSheet.calYear}}年{{todoSheet.calMonth}}月</view>
+            <view class="cal-nav" catchtap="onTodoCalNext">›</view>
+          </view>
+          <view class="cal-week">
+            <text wx:for="{{todoSheet.calWeek}}" wx:key="*this" class="cal-wd">{{item}}</text>
+          </view>
+          <view class="cal-grid">
+            <view wx:for="{{todoSheet.calDays}}" wx:key="key" wx:for-index="di"
+                  class="cal-cell {{item.empty ? 'empty' : ''}} {{item.isToday ? 'today' : ''}} {{item.isSel ? 'sel' : ''}}"
+                  data-iso="{{item.iso}}" catchtap="onTodoCalDay">
+              <block wx:if="{{!item.empty}}">{{item.dnum}}</block>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{todoSheet.customDate}}" class="custom-date-tip">已选自定义日期 · 保存后归入该日待办</view>
+      </view>
+      <view class="fs-actions">
+        <view class="fs-btn ghost" bindtap="closeTodoSheet">取消</view>
+        <view class="fs-btn main" bindtap="saveTodo">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 加倒计时 ===== -->
+  <view wx:if="{{cdSheet.show}}" class="mask" bindtap="closeCdSheet">
+    <view class="form-sheet" catchtap="noop">
+      <view class="fs-title">＋ 添加倒计时</view>
+      <view class="fs-row">
+        <view class="fs-label">事件名称 <text class="fs-req">*必填</text></view>
+        <input class="fs-input" placeholder="比如：国庆节 / 项目交付 / 体检" maxlength="40"
+               value="{{cdSheet.name}}" bindinput="onCdNameInput"/>
+      </view>
+      <view class="fs-row">
+        <view class="fs-label">事件详情 <text class="fs-opt">选填</text></view>
+        <textarea class="fs-area" placeholder="备注（可留空）" maxlength="200" auto-height
+                  value="{{cdSheet.desc}}" bindinput="onCdDescInput"/>
+      </view>
+      <view class="fs-row">
+        <view class="fs-label">日期 <text class="fs-req">*必填</text></view>
+        <!-- 公历 / 农历 切换 -->
+        <view class="seg">
+          <view class="seg-item {{cdSheet.cdType === 'solar' ? 'on' : ''}}" data-type="solar" bindtap="onCdType">公历</view>
+          <view class="seg-item {{cdSheet.cdType === 'lunar' ? 'on' : ''}}" data-type="lunar" bindtap="onCdType">农历</view>
+        </view>
+      </view>
+      <!-- 公历：月历网格点选（过去禁用，除非每年重复） -->
+      <view wx:if="{{cdSheet.cdType === 'solar'}}" class="fs-row">
+        <view class="fs-label">选择日期 <text class="fs-opt">{{cdSheet.annual ? '可任选（每年重复）' : '不早于今天'}}</text></view>
+        <!-- 上方显眼处：当前选中的公历日期（选定后显示，未选时提示） -->
+        <view class="solar-top">{{cdSheet.date ? '已选公历：' + cdSheet.dateLabel : '请在下方月历中选择日期'}}</view>
+        <view class="cal">
+          <view class="cal-head">
+            <view class="cal-nav" bindtap="onCdCalPrev">‹</view>
+            <view class="cal-title">{{cdSheet.calYear}}年{{cdSheet.calMonth}}月</view>
+            <view class="cal-nav" bindtap="onCdCalNext">›</view>
+          </view>
+          <view class="cal-week">
+            <text wx:for="{{cdSheet.calWeek}}" wx:key="*this" class="cal-wd">{{item}}</text>
+          </view>
+          <view class="cal-grid">
+            <view wx:for="{{cdSheet.calDays}}" wx:key="key" wx:for-index="di"
+                  class="cal-cell {{item.empty ? 'empty' : ''}} {{item.isToday ? 'today' : ''}} {{item.disabled ? 'dis' : ''}} {{item.isSel ? 'sel' : ''}}"
+                  data-iso="{{item.iso}}" bindtap="onCdCalDay">
+              <block wx:if="{{!item.empty}}">{{item.dnum}}</block>
+            </view>
+          </view>
+        </view>
+      </view>
+      <!-- 农历：默认选中今日 + 上方显眼公历 + 年/月(含闰)/日 三级联动 -->
+      <view wx:else class="fs-row">
+        <view class="fs-label">选择农历 <text class="fs-opt">{{cdSheet.annual ? '可任选（每年重复）' : '不早于今天'}}</text></view>
+        <view class="lunar-top">对应公历：{{cdSheet.solarRefFull || cdSheet.solarRef || '—'}}</view>
+        <view class="lunar-picker">
+          <picker-view class="lp-view" value="{{[cdSheet.lunarYearIdx]}}" bindchange="onCdLunarYear">
+            <picker-view-column><view wx:for="{{cdSheet.lunarYears}}" wx:key="*this" class="lp-col">{{item}}</view></picker-view-column>
+          </picker-view>
+          <picker-view class="lp-view" value="{{[cdSheet.lunarMonthIdx]}}" bindchange="onCdLunarMonth">
+            <picker-view-column><view wx:for="{{cdSheet.lunarMonths}}" wx:key="label" class="lp-col">{{item.label}}</view></picker-view-column>
+          </picker-view>
+          <picker-view class="lp-view" value="{{[cdSheet.lunarDayIdx]}}" bindchange="onCdLunarDay">
+            <picker-view-column><view wx:for="{{cdSheet.lunarDays}}" wx:key="*this" class="lp-col">{{item}}</view></picker-view-column>
+          </picker-view>
+        </view>
+        <view class="lunar-preview">{{cdSheet.lunarLabel}}</view>
+        <view wx:if="{{cdSheet.solarRef}}" class="lunar-solar-ref">公历 {{cdSheet.solarRef}}</view>
+        <view wx:if="{{cdSheet.cdPast}}" class="cd-past-hint">该农历日期早于今天，请选择今天或之后</view>
+      </view>
+      <view class="fs-row between">
+        <view class="fs-label">每年重复 <text class="fs-opt">生日 / 纪念日</text></view>
+        <switch checked="{{cdSheet.annual}}" color="#185FA5" bindchange="onCdAnnualChange"/>
+      </view>
+      <view class="fs-actions">
+        <view class="fs-btn ghost" bindtap="closeCdSheet">取消</view>
+        <view class="fs-btn main" bindtap="saveCd">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 顶部日期快捷选择（chip 弹层）===== -->
+  <view wx:if="{{dateSheet.show}}" class="mask" bindtap="closeDateSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">选择日期</view>
+      <view class="date-chips wrap">
+        <view wx:for="{{dateSheet.chips}}" wx:key="iso" wx:for-index="ci"
+              class="date-chip {{dateSheet.sel === ci ? 'on' : ''}} {{item.isToday ? 'today' : ''}} {{item.isFuture ? 'future' : ''}}"
+              data-idx="{{ci}}" bindtap="onDateChip">
+          <view class="dc-label">{{item.label}}</view>
+          <view class="dc-sub">{{item.sub}}</view>
+          <view wx:if="{{item.hasTodo}}" class="dot-todo"></view>
+        </view>
+      </view>
+      <view class="jump-row">
+        <picker mode="date" start="2000-01-01" end="2100-12-31" value="{{viewDate}}" bindchange="onDateJump">
+          <view class="jump-pick">📅 跳转指定日期 ›</view>
+        </picker>
+      </view>
+      <view class="sh-actions">
+        <view class="sh-btn main" bindtap="closeDateSheet">关 闭</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 完成激励动效 -->
+  <view wx:if="{{celebrate}}" class="celebrate">🎉</view>
+</view>

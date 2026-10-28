@@ -1,0 +1,57 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/reading/reading",
+    "pages/fitness/fitness",
+    "pages/learning/learning",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "宝哥工作台",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f5ee"
+  },
+  "tabBar": {
+    "color": "#888780",
+    "selectedColor": "#534AB7",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "今日",
+        "iconPath": "assets/tabbar/tab_today.png",
+        "selectedIconPath": "assets/tabbar/tab_today_active.png"
+      },
+      {
+        "pagePath": "pages/reading/reading",
+        "text": "读书",
+        "iconPath": "assets/tabbar/tab_reading.png",
+        "selectedIconPath": "assets/tabbar/tab_reading_active.png"
+      },
+      {
+        "pagePath": "pages/fitness/fitness",
+        "text": "健身",
+        "iconPath": "assets/tabbar/tab_fitness.png",
+        "selectedIconPath": "assets/tabbar/tab_fitness_active.png"
+      },
+      {
+        "pagePath": "pages/learning/learning",
+        "text": "学习",
+        "iconPath": "assets/tabbar/tab_learning.png",
+        "selectedIconPath": "assets/tabbar/tab_learning_active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/tabbar/tab_profile.png",
+        "selectedIconPath": "assets/tabbar/tab_profile_active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

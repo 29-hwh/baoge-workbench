@@ -1,0 +1,278 @@
+<view class="page {{themeDark}}">
+  <!-- 视图切换 -->
+  <view class="switch">
+    <view class="sw-item {{isShelf ? 'active' : ''}}" data-tab="shelf" bindtap="switchTab">
+      📖 在读 <text class="sw-n">{{books.length}}</text>
+    </view>
+    <view class="sw-item {{isWall ? 'active' : ''}}" data-tab="wall" bindtap="switchTab">
+      🏆 已读 <text class="sw-n">{{reads.length}}</text>
+    </view>
+  </view>
+
+  <!-- 导出读书笔记 -->
+  <view class="export-bar">
+    <view class="export-link" bindtap="exportNotes">⬇ 导出读书笔记 · Markdown</view>
+  </view>
+
+  <!-- ===================== 书架视图 ===================== -->
+  <block wx:if="{{isShelf}}">
+    <view class="card shelf-hero">
+      <view class="hero-title">本周阅读 · 平均进度</view>
+      <view class="hero-num">{{avgPercent}}<text class="pct">%</text></view>
+      <view class="progress"><view class="progress-bar reading" style="width:{{avgPercent}}%"></view></view>
+      <view class="muted mt-20">
+        本周翻阅 <text class="wk-num">{{week.books}}</text> 本 · 记录 <text class="wk-num">{{week.steps}}</text> 次
+        · 在读 {{books.length}} 本
+      </view>
+    </view>
+
+    <block wx:if="{{books.length}}">
+      <view wx:for="{{books}}" wx:key="_id" class="card book-card" style="border-left:8rpx solid {{item.color}};">
+        <view class="book-head" data-id="{{item._id}}" bindtap="toggleExpand">
+          <!-- 进度弧 -->
+          <view class="book-arc" style="background:conic-gradient({{item.color}} {{item.arc}}%, #eee 0);">
+            <view class="book-arc-in">{{item.percent}}%</view>
+          </view>
+          <view class="book-info">
+            <view class="book-title">{{item.title}}</view>
+            <view class="muted book-subtle">{{item.authorLine}}</view>
+          </view>
+          <view class="book-pct"></view>
+        </view>
+
+        <view wx:if="{{item.deadlineText}}" class="deadline {{item.overdue ? 'overdue' : ''}}"
+              data-id="{{item._id}}" bindtap="pickDeadline">{{item.deadlineText}}</view>
+
+        <view class="progress mt-20"><view class="progress-bar reading" style="width:{{item.percent}}%"></view></view>
+        <view class="book-sub">{{item.subtitle}}</view>
+
+        <!-- 阅读记录随手保存 -->
+        <view class="record-entry" data-id="{{item._id}}" bindtap="addRecord">
+          📝 写阅读记录 / 记一笔<text wx:if="{{item.recordCount}}" class="rec-tag">· 已记 {{item.recordCount}} 条</text>
+        </view>
+
+        <!-- 时间线（展开回看，逐条可删） -->
+        <view wx:if="{{item.isExpanded && item.recordCount}}" class="record-list">
+          <view wx:for="{{item.recViews}}" wx:for-item="rec" wx:key="createdAt" wx:if="{{index < 3 || item.recExpanded}}" class="record-line">
+            <view class="rec-dot"></view>
+            <view class="rec-body">
+              <view class="rec-meta">{{rec.date}} · {{rec.label}}</view>
+              <view wx:if="{{rec.note}}" class="rec-note">{{rec.note}}</view>
+            </view>
+            <view class="rec-del" data-id="{{item._id}}" data-ca="{{rec.createdAt}}" catchtap="deleteRecord">删</view>
+          </view>
+          <view wx:if="{{item.recordCount > 3}}" class="rec-toggle" data-id="{{item._id}}" bindtap="toggleBookRecords">{{item.recExpanded ? '收起记录' : '查看全部（' + item.recordCount + '）'}}</view>
+          <view class="rec-count muted">共 {{item.recordCount}} 条 · 点书名收起</view>
+        </view>
+
+        <view class="book-actions">
+          <view class="act-btn act-tap" data-id="{{item._id}}" bindtap="openJump">记进度</view>
+          <view class="act-btn" data-id="{{item._id}}" bindtap="editMenu">⋯ 管理</view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="emoji">📚</view>
+      <view>书架空空 · 加第一本吧</view>
+      <view bindtap="addBook" class="btn-primary mt-20" style="width:280rpx;">＋ 加一本书</view>
+    </view>
+  </block>
+
+  <!-- ===================== 书墙视图 ===================== -->
+  <block wx:else>
+    <view class="card stat-hero">
+      <view class="stat-row">
+        <view class="stat-cell"><view class="stat-num">{{stats.total}}</view><view class="stat-lab">累计读完</view></view>
+        <view class="stat-div"></view>
+        <view class="stat-cell"><view class="stat-num">{{stats.month}}</view><view class="stat-lab">本月读完</view></view>
+        <view class="stat-div"></view>
+        <view class="stat-cell"><view class="stat-num">{{stats.notes}}</view><view class="stat-lab">阅读记录</view></view>
+      </view>
+    </view>
+
+    <!-- 1.2：搜索栏已从「在读」迁移到「已读」书墙（按书名/作者过滤已读书） -->
+    <view class="search-bar">
+      <input class="search-input" placeholder="搜索已读书名 / 作者" value="{{search}}" bindinput="onSearch"/>
+      <view wx:if="{{search}}" class="search-clear" bindtap="clearSearch">✕</view>
+    </view>
+
+    <view class="wall-sort">
+      <view class="seg-item {{wallSort === 'time' ? 'on' : ''}}" data-sort="time" bindtap="setWallSort">按读完时间</view>
+      <view class="seg-item {{wallSort === 'rating' ? 'on' : ''}}" data-sort="rating" bindtap="setWallSort">按评分</view>
+      <view class="seg-item {{wallSort === 'author' ? 'on' : ''}}" data-sort="author" bindtap="setWallSort">按作者</view>
+    </view>
+
+    <scroll-view wx:if="{{authors.length > 1}}" scroll-x class="author-chips">
+      <view class="a-chip {{wallAuthor === '' ? 'on' : ''}}" data-author="" bindtap="setWallAuthor">全部</view>
+      <view wx:for="{{authors}}" wx:key="*this" class="a-chip {{wallAuthor === item ? 'on' : ''}}"
+            data-author="{{item}}" bindtap="setWallAuthor">{{item}}</view>
+    </scroll-view>
+
+    <view class="wall-hero">
+      <view class="wall-title">🏆 我的书脊墙</view>
+      <view class="wall-sub">{{reads.length}} 本读完 · 点击书脊回看评分与阅读记录</view>
+    </view>
+
+    <block wx:if="{{reads.length}}">
+      <!-- 1.4：书多时 book-wall 进 scroll-view 限高滚动；spine 用动态宽高，保证大量书籍仍清晰 -->
+      <scroll-view wx:if="{{wallScroll}}" scroll-y class="book-wall wall-scroll">
+        <view wx:for="{{reads}}" wx:key="_id" class="spine" style="width:{{spineW}}rpx;min-height:{{spineH}}rpx;background:{{item.color}};"
+              data-id="{{item._id}}" bindtap="showReadDetail">
+          <view class="spine-star">{{item.rating ? '★' : ''}}</view>
+          <view class="spine-title">{{item.title}}</view>
+          <view class="spine-foot">{{item.finishedLabel || ''}}</view>
+        </view>
+      </scroll-view>
+      <view wx:else class="book-wall">
+        <view wx:for="{{reads}}" wx:key="_id" class="spine" style="width:{{spineW}}rpx;min-height:{{spineH}}rpx;background:{{item.color}};"
+              data-id="{{item._id}}" bindtap="showReadDetail">
+          <view class="spine-star">{{item.rating ? '★' : ''}}</view>
+          <view class="spine-title">{{item.title}}</view>
+          <view class="spine-foot">{{item.finishedLabel || ''}}</view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:else class="empty">
+      <view class="emoji">📭</view>
+      <view>书墙还没立起第一根书脊</view>
+      <view class="muted">在「在读」里读完一本书试试</view>
+    </view>
+  </block>
+
+  <!-- 已读书详情 -->
+  <view wx:if="{{readDetail}}" class="mask" bindtap="closeReadDetail">
+    <view class="detail-card" catchtap="noop">
+      <view class="detail-color" style="background:{{readDetail.color}};"></view>
+      <view class="detail-title">{{readDetail.title}}</view>
+      <view class="detail-author muted">{{readDetail.author || '未填作者'}}</view>
+      <view class="detail-rating" bindtap="changeRating">{{readDetail.ratingText}}<text class="rating-edit">点星可改</text></view>
+      <view class="detail-meta"><text>{{readDetail.startLabel}}</text><text wx:if="{{readDetail.durationLabel}}"> · {{readDetail.durationLabel}}</text></view>
+      <view class="detail-meta">{{readDetail.finishedLabel}} · 读过</view>
+      <view class="detail-review-title">一句话书评</view>
+      <view wx:if="{{readDetail.review}}" class="detail-review">{{readDetail.review}}</view>
+      <view wx:else class="detail-review muted">还没写书评 · 点下面补</view>
+      <view wx:if="{{readDetail.tagText}}" class="detail-tags">🏷 {{readDetail.tagText}}</view>
+
+      <view wx:if="{{readDetail.noteTotal}}" class="detail-notes">
+        <view class="detail-review-title">📝 读书记录（{{readDetail.noteTotal}} 条）</view>
+        <view wx:for="{{readDetail.noteViews}}" wx:for-item="nv" wx:key="createdAt" wx:if="{{index < 3 || readDetail.noteShowAll}}" class="note-line">
+          <view class="note-meta">{{nv.date}} · {{nv.label}}</view>
+          <view wx:if="{{nv.note}}" class="note-text">{{nv.note}}</view>
+          <view class="note-del" data-ca="{{nv.createdAt}}" catchtap="deleteNoteFromDetail">删</view>
+        </view>
+        <view wx:if="{{readDetail.noteTotal > 3}}" class="rec-toggle" bindtap="toggleNoteAll">{{readDetail.noteShowAll ? '收起记录' : '查看全部（' + readDetail.noteTotal + '）'}}</view>
+      </view>
+
+      <view class="detail-actions">
+        <view class="act-btn" bindtap="editReview">{{readDetail.review ? '改书评' : '补书评'}}</view>
+        <view class="act-btn act-danger" bindtap="deleteFromDetail">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 定位进度 -->
+  <view wx:if="{{jump.show}}" class="mask" bindtap="closeJump">
+    <view class="pp-sheet" catchtap="noop">
+      <view class="pp-title">《{{jump.title}}》记到哪了？</view>
+      <view class="jump-val">{{jump.label}}</view>
+      <view class="jump-pct muted">全书进度 {{jump.pct}}% · 拖动滑块快速定位，松手点「记到这里」</view>
+      <slider class="jump-slider" min="{{jump.min}}" max="{{jump.max}}" step="{{jump.step}}"
+              value="{{jump.val}}" block-size="24" activeColor="#378ADD" backgroundColor="rgba(0,0,0,0.08)" bindchange="onJumpChange"/>
+      <view class="pp-actions">
+        <view class="pp-btn ghost" bindtap="closeJump">取 消</view>
+        <view class="pp-btn main" bindtap="commitJump">记到这里</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 补记过去完成日期 -->
+  <view wx:if="{{dateSel.show}}" class="mask" bindtap="closePastSel">
+    <view class="date-sheet" catchtap="noop">
+      <view class="ds-title">哪天读完的？（补记过去日期）</view>
+      <picker mode="date" start="{{dateSel.min}}" end="{{dateSel.max}}" value="{{dateSel.value}}" bindchange="onPastDateChange">
+        <view class="ds-pick">点我选日期 ›</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 加书 / 编辑：单表单合并 -->
+  <view wx:if="{{bookSheet.show}}" class="mask" bindtap="closeBookSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">{{bookSheet.editId ? '编辑书籍' : '＋ 加一本书'}}</view>
+      <view class="sh-row">
+        <view class="sh-label">书名 <text class="fs-req">*必填</text></view>
+        <input class="sh-input" placeholder="如：人类简史" value="{{bookSheet.title}}" bindinput="onBookTitle"/>
+      </view>
+      <view class="sh-row">
+        <view class="sh-label">作者（选填）</view>
+        <input class="sh-input" placeholder="如：尤瓦尔·赫拉利" value="{{bookSheet.author}}" bindinput="onBookAuthor"/>
+      </view>
+      <view class="sh-label">进度单位 <text class="fs-req">*必填</text></view>
+      <view class="unit-row">
+        <view class="unit-opt {{bookSheet.unit === 'chapter' ? 'on' : ''}}" data-unit="chapter" bindtap="onBookUnit">按章</view>
+        <view class="unit-opt {{bookSheet.unit === 'page' ? 'on' : ''}}" data-unit="page" bindtap="onBookUnit">按页</view>
+        <view class="unit-opt {{bookSheet.unit === 'percent' ? 'on' : ''}}" data-unit="percent" bindtap="onBookUnit">按百分比</view>
+      </view>
+      <view wx:if="{{bookSheet.unit !== 'percent'}}" class="sh-row">
+        <view class="sh-label">总量 <text class="fs-req">*必填</text></view>
+        <input class="sh-input" type="number" placeholder="如：28 章 / 350 页" value="{{bookSheet.total}}" bindinput="onBookTotal"/>
+      </view>
+      <!-- 1.1：目标读完日（选填）— 不填不影响保存；回填时显示已设日期 -->
+      <view class="sh-row">
+        <view class="sh-label">目标读完日 <text class="fs-opt">选填</text></view>
+        <picker mode="date" start="{{today}}" end="2100-12-31" value="{{bookSheet.deadline || today}}" bindchange="onBookDeadline">
+          <view class="sh-input picker {{bookSheet.deadline ? '' : 'ph'}}">{{bookSheet.deadline || '不设置（点此选择）'}}</view>
+        </picker>
+      </view>
+      <view class="sh-row between">
+        <view class="sh-label">自动加入每日待办 <text class="fs-opt">默认不加入</text></view>
+        <switch checked="{{bookSheet.autoTodo}}" color="#534AB7" bindchange="onBookAutoTodo"/>
+      </view>
+      <view class="form-hint">⚠ 需先设置「目标读完日」（⋯ 管理 → 🎯）才能开启每日待办</view>
+      <view wx:if="{{bookSheet.error}}" class="form-err">{{bookSheet.error}}</view>
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="closeBookSheet">取消</view>
+        <view class="sh-btn main" bindtap="saveBookSheet">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 书评编辑（多行 + 标签） -->
+  <view wx:if="{{reviewSheet.show}}" class="mask" bindtap="closeReviewSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">写书评</view>
+      <view class="sh-label">一句话书评</view>
+      <textarea class="sh-area" placeholder="这本书带给你的感受 / 推荐给谁" value="{{reviewSheet.review}}" bindinput="onReviewInput" auto-height maxlength="300"/>
+      <view class="sh-label">标签（空格分隔，选填）</view>
+      <input class="sh-input" placeholder="如：工具书 小说 治愈" value="{{reviewSheet.tags}}" bindinput="onReviewTags"/>
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="closeReviewSheet">取消</view>
+        <view class="sh-btn main" bindtap="saveReviewSheet">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 进度满 100% 弹出「上墙」填写界面：评分必填 + 书评选填 -->
+  <view wx:if="{{finishSheet.show}}" class="mask" bindtap="closeFinishSheet">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">🎉 读完啦！上墙留个评分</view>
+      <view class="sh-label">评分 <text class="fs-req">*必填</text></view>
+      <view class="rating-pick">
+        <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" wx:for-item="n"
+              class="rt-star {{finishSheet.rating >= n ? 'on' : ''}}" data-r="{{n}}" bindtap="onFinishRating">{{finishSheet.rating >= n ? '★' : '☆'}}</text>
+        <text class="rt-hint">{{finishSheet.rating ? finishSheet.rating + ' 星' : '点星评分'}}</text>
+      </view>
+      <view class="sh-label">一句话书评 <text class="fs-opt">选填</text></view>
+      <textarea class="sh-area" placeholder="这本书带给你的感受 / 推荐给谁（可留空）" value="{{finishSheet.review}}" bindinput="onFinishReview" auto-height maxlength="300"/>
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="closeFinishSheet">稍后</view>
+        <view class="sh-btn main" bindtap="saveFinish">上 墙</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- FAB -->
+  <view wx:if="{{isShelf}}" class="fab" bindtap="addBook">＋</view>
+</view>

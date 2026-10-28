@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宝哥工作台 · 桌面版</title>
+<style>
+  :root{
+    --c-bg:#f7f5ee; --c-card:#ffffff; --c-text:#2b2b28; --c-text-2:#5c5a53;
+    --c-text-3:#9a978d; --c-divider:#eceae2; --c-primary:#534AB7; --c-primary-soft:#eeecfa;
+    --c-danger:#A32D2D; --c-ok:#2f7d5a; --c-warn:#b06a12; --radius:14px;
+    --shadow:0 1px 3px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.10);
+  }
+  .theme-dark{
+    --c-bg:#141412; --c-card:#1e1e1b; --c-text:#eceae2; --c-text-2:#b3b0a6;
+    --c-text-3:#7a776e; --c-divider:#2e2e2a; --c-primary:#9a92f0; --c-primary-soft:#26243a;
+    --c-danger:#e07070; --c-ok:#6fbf94; --c-warn:#d9a35a;
+    --shadow:0 1px 3px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--c-bg); color:var(--c-text); min-height:100vh;
+    font-family:-apple-system,"PingFang SC","Songti SC","Microsoft YaHei",sans-serif;
+    font-size:14px; line-height:1.6; -webkit-font-smoothing:antialiased;
+    transition:background .2s ease, color .2s ease;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:0 18px 72px}
+
+  /* ---------- 顶栏 ---------- */
+  header{position:sticky; top:0; z-index:50; background:var(--c-bg); padding:16px 0 10px; border-bottom:1px solid var(--c-divider)}
+  .hd{display:flex; align-items:center; gap:12px}
+  .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#534AB7,#8b7ff0);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex:none}
+  .hd h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.3px}
+  .hd .sub{font-size:11.5px;color:var(--c-text-3);margin-top:1px}
+  .hd .spacer{flex:1}
+  .icobtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--c-divider);background:var(--c-card);color:var(--c-text-2);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+  .icobtn:hover{border-color:var(--c-primary);color:var(--c-primary)}
+
+  nav.tabs{display:flex;gap:6px;margin-top:14px;overflow-x:auto}
+  nav.tabs button{
+    border:none;background:transparent;color:var(--c-text-2);font-size:14px;font-weight:600;
+    padding:8px 14px;border-radius:10px;cursor:pointer;white-space:nowrap;font-family:inherit;
+  }
+  nav.tabs button.on{background:var(--c-primary-soft);color:var(--c-primary)}
+  nav.tabs button:hover:not(.on){color:var(--c-text)}
+
+  main{padding-top:20px}
+  section.view{display:none;animation:fade .18s ease}
+  section.view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--c-card);border:1px solid var(--c-divider);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 4px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card h2 .cnt{font-size:11.5px;color:var(--c-text-3);font-weight:500}
+  .muted{color:var(--c-text-3);font-size:12.5px}
+
+  /* ---------- 表单 ---------- */
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input,select,textarea{
+    font-family:inherit;font-size:13.5px;color:var(--c-text);background:var(--c-bg);
+    border:1px solid var(--c-divider);border-radius:10px;padding:9px 12px;outline:none;min-width:0;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--c-primary);background:var(--c-card)}
+  input.grow{flex:1;min-width:160px}
+  .btn{
+    font-family:inherit;font-size:13.5px;font-weight:600;border:none;border-radius:10px;
+    padding:9px 16px;cursor:pointer;background:var(--c-primary);color:#fff;white-space:nowrap;
+  }
+  .btn:hover{filter:brightness(1.07)}
+  .btn.ghost{background:transparent;border:1px solid var(--c-divider);color:var(--c-text-2)}
+  .btn.ghost:hover{border-color:var(--c-primary);color:var(--c-primary);filter:none}
+  .btn.danger{background:transparent;border:1px solid var(--c-danger);color:var(--c-danger)}
+  .btn.danger:hover{background:var(--c-danger);color:#fff;filter:none}
+  .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:8px}
+
+  /* ---------- 列表 ---------- */
+  ul.list{list-style:none;margin:0;padding:0}
+  ul.list li{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--c-divider)}
+  ul.list li:last-child{border-bottom:none}
+  .chk{width:19px;height:19px;border-radius:6px;border:2px solid var(--c-text-3);flex:none;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;transition:.12s}
+  .chk.on{background:var(--c-ok);border-color:var(--c-ok)}
+  .li-main{flex:1;min-width:0}
+  .li-title{font-size:14px;font-weight:500;word-break:break-word}
+  .li-title.done{text-decoration:line-through;color:var(--c-text-3)}
+  .li-meta{font-size:11.5px;color:var(--c-text-3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+  .tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:6px;background:var(--c-primary-soft);color:var(--c-primary);font-weight:600}
+  .tag.warn{background:#fdf1e0;color:var(--c-warn)}
+  .tag.ok{background:#e6f4ec;color:var(--c-ok)}
+  .theme-dark .tag.warn{background:#3a2c17}
+  .theme-dark .tag.ok{background:#173125}
+  .li-act{display:flex;gap:6px;flex:none}
+  .x{border:none;background:transparent;color:var(--c-text-3);cursor:pointer;font-size:15px;padding:2px 5px;border-radius:6px;line-height:1}
+  .x:hover{color:var(--c-danger);background:var(--c-bg)}
+
+  .bar{height:6px;border-radius:3px;background:var(--c-divider);overflow:hidden;margin-top:8px}
+  .bar span{display:block;height:100%;background:var(--c-primary);border-radius:3px;transition:width .3s}
+
+  .empty{text-align:center;color:var(--c-text-3);padding:30px 10px;font-size:13px}
+  .empty .big{font-size:26px;display:block;margin-bottom:8px;opacity:.55}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .stat{background:var(--c-card);border:1px solid var(--c-divider);border-radius:12px;padding:13px 14px}
+  .stat .n{font-size:22px;font-weight:700;font-family:"Songti SC",serif;line-height:1.2}
+  .stat .l{font-size:11.5px;color:var(--c-text-3);margin-top:2px}
+
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(10px);
+    background:var(--c-text);color:var(--c-bg);font-size:13px;font-weight:600;
+    padding:10px 20px;border-radius:22px;opacity:0;pointer-events:none;transition:.22s;z-index:200;max-width:80vw;text-align:center
+  }
+  .toast.on{opacity:1;transform:translateX(-50%)}
+
+  .drop{border:1.5px dashed var(--c-divider);border-radius:12px;padding:22px;text-align:center;color:var(--c-text-3);font-size:13px;transition:.15s;cursor:pointer}
+  .drop:hover,.drop.over{border-color:var(--c-primary);color:var(--c-primary);background:var(--c-primary-soft)}
+  pre.log{background:var(--c-bg);border:1px solid var(--c-divider);border-radius:10px;padding:12px;font-size:11.5px;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-all;color:var(--c-text-2);margin:10px 0 0}
+  a{color:var(--c-primary)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hd">
+      <div class="logo">宝</div>
+      <div>
+        <h1>宝哥工作台 · 桌面版</h1>
+        <div class="sub" id="hSub">数据存在本机浏览器 · 与小程序备份互通</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="icobtn" id="themeBtn" title="切换主题">◐</button>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-v="today" class="on">今日</button>
+      <button data-v="reading">读书</button>
+      <button data-v="fitness">健身</button>
+      <button data-v="learning">学习</button>
+      <button data-v="profile">我的</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============ 今日 ============ -->
+    <section class="view on" id="v-today">
+      <div class="card">
+        <h2>今日待办 <span class="cnt" id="todayDate"></span></h2>
+        <div class="row" style="margin:12px 0 4px">
+          <input class="grow" id="todoTitle" placeholder="要做点什么…" maxlength="120">
+          <input type="date" id="todoDate">
+          <label class="muted" style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="checkbox" id="todoImp" style="width:auto">重要</label>
+          <button class="btn" id="addTodo">添加</button>
+        </div>
+        <ul class="list" id="todoList"></ul>
+      </div>
+      <div class="card">
+        <h2>概览</h2>
+        <div class="grid" id="todayStats" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- ============ 读书 ============ -->
+    <section class="view" id="v-reading">
+      <div class="card">
+        <h2>在读书籍 <span class="cnt" id="bookCnt"></span></h2>
+        <div class="row" style="margin:12px 0 4px">
+          <input class="grow" id="bookTitle" placeholder="书名" maxlength="80">
+          <input id="bookAuthor" placeholder="作者" maxlength="40" style="width:130px">
+          <button class="btn" id="addBook">加入书架</button>
+        </div>
+        <ul class="list" id="bookList"></ul>
+      </div>
+      <div class="card">
+        <h2>已读书脊墙 <span class="cnt" id="readCnt"></span></h2>
+        <ul class="list" id="readList"></ul>
+      </div>
+    </section>
+
+    <!-- ============ 健身 ============ -->
+    <section class="view" id="v-fitness">
+      <div class="card">
+        <h2>训练记录 <span class="cnt" id="woCnt"></span></h2>
+        <div class="row" style="margin:12px 0 4px">
+          <input class="grow" id="woName" placeholder="今天练什么（如 胸 + 三头）" maxlength="60">
+          <input type="date" id="woDate">
+          <button class="btn" id="addWo">记录</button>
+        </div>
+        <ul class="list" id="woList"></ul>
+      </div>
+      <div class="card">
+        <h2>身体数据 <span class="cnt" id="bodyCnt"></span></h2>
+        <div class="row" style="margin:12px 0 4px">
+          <input type="date" id="bodyDate">
+          <input id="bodyW" type="number" step="0.1" placeholder="体重 kg" style="width:110px">
+          <input id="bodyF" type="number" step="0.1" placeholder="体脂 %" style="width:110px">
+          <button class="btn" id="addBody">记录</button>
+        </div>
+        <ul class="list" id="bodyList"></ul>
+      </div>
+    </section>
+
+    <!-- ============ 学习 ============ -->
+    <section class="view" id="v-learning">
+      <div class="card">
+        <h2>技能计划 <span class="cnt" id="skillCnt"></span></h2>
+        <div class="row" style="margin:12px 0 4px">
+          <input class="grow" id="skillName" placeholder="想学点什么（如 摄影 / 英语口语）" maxlength="60">
+          <input id="skillCycle" type="number" min="1" placeholder="周期天" style="width:100px">
+          <button class="btn" id="addSkill">开始</button>
+        </div>
+        <ul class="list" id="skillList"></ul>
+      </div>
+      <div class="card">
+        <h2>已达成图鉴 <span class="cnt" id="achCnt"></span></h2>
+        <ul class="list" id="achList"></ul>
+      </div>
+    </section>
+
+    <!-- ============ 我的 ============ -->
+    <section class="view" id="v-profile">
+      <div class="card">
+        <h2>数据总览</h2>
+        <div class="grid" id="profileStats" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <h2>备份 · 与小程序互通</h2>
+        <p class="muted" style="margin:6px 0 12px">
+          导出格式与小程序完全一致（<code>app/version/counts/data/checksum</code>，FNV-1a 校验）。
+          把小程序里「我的 → 导出备份」得到的 JSON 拖进来即可无缝续用；反向同理。
+        </p>
+        <div class="row">
+          <button class="btn" id="expBtn">导出备份 JSON</button>
+          <button class="btn ghost" id="impBtn">导入备份 JSON</button>
+          <button class="btn ghost" id="pasteBtn">从剪贴板导入</button>
+          <input type="file" id="fileInput" accept=".json,application/json" hidden>
+        </div>
+        <div class="drop" id="dropZone" style="margin-top:12px">把备份 JSON 文件拖到这里 · 或点击选择文件</div>
+      </div>
+
+      <div class="card">
+        <h2>危险操作</h2>
+        <div class="row" style="margin-top:10px">
+          <button class="btn danger sm" id="clearAll">清空全部数据</button>
+          <button class="btn ghost sm" id="fillDemo">载入示例数据</button>
+        </div>
+        <pre class="log" id="log" hidden></pre>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   宝哥工作台 · 桌面版（单文件 / 零依赖 / 双击即开）
+   与小程序 baoge-workbench 的数据契约完全对齐：
+     · 9 张业务表，localStorage key 同 baoge: 前缀
+     · 备份快照 {app, version, exportedAt, counts, data, checksum}
+     · checksum = FNV-1a(JSON.stringify(data))，与 utils/backupGuard.js 同算法
+   ===================================================================== */
+
+// ---------- 数据契约（与 utils/storage.js KEYS 一致） ----------
+const KEYS = {
+  books:'baoge:books', bookRead:'baoge:bookRead', skills:'baoge:skills',
+  skillAchieved:'baoge:skillAchieved', workouts:'baoge:workouts', body:'baoge:body',
+  todos:'baoge:todos', countdown:'baoge:countdown', templates:'baoge:templates',
+  settings:'baoge:settings'
+};
+// 备份范围：与 utils/backup.js DATA_KEYS 完全一致（settings 刻意不入快照）
+const DATA_KEYS = ['books','bookRead','skills','skillAchieved','workouts','body','todos','countdown','templates'];
+const SNAPSHOT_VERSION = 1;
+const APP_ID = 'baoge-workbench';
+
+// ---------- 存储层 ----------
+function list(k){ try{ const v = JSON.parse(localStorage.getItem(KEYS[k]) || '[]'); return Array.isArray(v)?v:[]; }catch(e){ return []; } }
+function set(k, arr){ localStorage.setItem(KEYS[k], JSON.stringify(arr)); }
+function genId(){ return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+function uid(){ return genId(); }
+
+// ---------- FNV-1a（与 backupGuard.checksum 逐字节一致） ----------
+function checksum(str){
+  let h = 0x811c9dc5;
+  for (let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return ('00000000' + h.toString(16)).slice(-8);
+}
+
+// ---------- 日期工具（与小程序一致：本地时区 YYYY-MM-DD） ----------
+function iso(d){ const p=n=>(n<10?'0':'')+n; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+function today(){ return iso(new Date()); }
+function dayLabel(s){
+  if(!s) return '';
+  const t=today();
+  if(s===t) return '今天';
+  const d=new Date(s+'T00:00:00'), n=new Date(t+'T00:00:00');
+  const diff=Math.round((n-d)/86400000);
+  if(diff===1) return '昨天'; if(diff===-1) return '明天';
+  return s.slice(5);
+}
+
+// ---------- 快照 ----------
+function buildSnapshot(){
+  const data={}, counts={};
+  DATA_KEYS.forEach(k=>{ data[k]=list(k); counts[k]=data[k].length; });
+  const snap={ app:APP_ID, version:SNAPSHOT_VERSION, exportedAt:Date.now(), counts:counts, data:data };
+  snap.checksum = checksum(JSON.stringify(data));
+  return snap;
+}
+function snapshotText(){ return JSON.stringify(buildSnapshot(), null, 2); }
+
+// ---------- 导入（含文件级校验 + 校验和 + 逐表落库） ----------
+function importSnapshotText(text){
+  const t = String(text==null?'':text).replace(/^\uFEFF/,'').trim();
+  let snap;
+  try{ snap = JSON.parse(t); }catch(e){ throw new Error('不是合法的 JSON 文件：' + e.message); }
+  if(!snap || typeof snap!=='object') throw new Error('备份内容不是对象');
+  if(snap.app !== APP_ID) throw new Error('不是「宝哥工作台」的备份（app=' + snap.app + '）');
+  if(snap.version !== SNAPSHOT_VERSION) throw new Error('备份版本不兼容（version=' + snap.version + '，期望 ' + SNAPSHOT_VERSION + '）');
+  if(!snap.data || typeof snap.data!=='object') throw new Error('备份缺少 data 段');
+
+  // 校验和（旧备份无此字段则放行）
+  const warns=[];
+  if(typeof snap.checksum==='string'){
+    const actual = checksum(JSON.stringify(snap.data));
+    if(actual !== snap.checksum) warns.push('校验和不一致（期望 '+snap.checksum+'，实际 '+actual+'），可能被截断或篡改，已尽力恢复');
+  }
+  // 逐表写入（非数组/缺失则跳过该表，保留原数据）
+  const applied={}, skippedKeys=[];
+  DATA_KEYS.forEach(k=>{
+    const arr = snap.data[k];
+    if(arr===undefined){ skippedKeys.push(k); return; }
+    if(!Array.isArray(arr)){ warns.push('「'+k+'」不是数组，已跳过该组'); return; }
+    const cleaned = arr.filter(x=>x && typeof x==='object' && !Array.isArray(x))
+                       .map(x=>Object.assign({}, x, x._id?{}:{_id:uid()}));
+    set(k, cleaned); applied[k]=cleaned.length;
+  });
+  return { applied:applied, skippedKeys:skippedKeys, warnings:warns,
+           total:Object.keys(applied).reduce((a,k)=>a+applied[k],0) };
+}
+
+// ---------- UI 基础 ----------
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.prototype.slice.call(document.querySelectorAll(s));
+let toastTimer=null;
+function toast(msg){
+  const el=$('#toast'); el.textContent=msg; el.classList.add('on');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('on'), 2000);
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ---------- 视图切换 ----------
+const RENDERERS = {};
+let curView='today';
+function show(v){
+  curView=v;
+  $$('#tabs button').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+  $$('section.view').forEach(s=>s.classList.toggle('on', s.id==='v-'+v));
+  if(RENDERERS[v]) RENDERERS[v]();
+  location.hash = v;
+}
+$('#tabs').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) show(b.dataset.v); });
+
+// ==================== 今日 ====================
+function todosOf(date){ return list('todos').filter(t=>t.date===date); }
+
+RENDERERS.today = function(){
+  const d=today();
+  $('#todayDate').textContent = dayLabel(d) + ' · ' + d;
+  if(!$('#todoDate').value) $('#todoDate').value = d;
+
+  const items = todosOf(d).sort((a,b)=> (b.important?1:0)-(a.important?1:0) || (a.createdAt||0)-(b.createdAt||0));
+  const el=$('#todoList');
+  if(!items.length){ el.innerHTML='<li><div class="empty" style="flex:1"><span class="big">☀️</span>今天还没有安排，加一条吧</div></li>'; }
+  else{
+    el.innerHTML = items.map(t=>`
+      <li>
+        <div class="chk ${t.done?'on':''}" data-act="toggle" data-id="${t._id}">${t.done?'✓':''}</div>
+        <div class="li-main">
+          <div class="li-title ${t.done?'done':''}">${esc(t.title)}</div>
+          <div class="li-meta">
+            ${t.important?'<span class="tag warn">重要</span>':''}
+            ${t.source&&t.source!=='manual'?`<span class="tag">来自${t.source==='reading'?'读书':'健身'}</span>`:''}
+            <span>${dayLabel(t.date)}</span>
+          </div>
+        </div>
+        <div class="li-act"><button class="x" data-act="del" data-id="${t._id}" title="删除">✕</button></div>
+      </li>`).join('');
+  }
+  // 概览
+  const doneN=items.filter(t=>t.done).length;
+  const all=list('todos');
+  $('#todayStats').innerHTML = [
+    [items.length,'今日待办'], [doneN,'已完成'], [items.length-doneN,'待办'],
+    [list('books').length,'在读书籍'], [list('skills').length,'在学技能']
+  ].map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+};
+$('#todoList').addEventListener('click', e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return;
+  const id=t.dataset.id, arr=list('todos'), i=arr.findIndex(x=>x._id===id); if(i<0) return;
+  if(t.dataset.act==='toggle'){ arr[i].done=!arr[i].done; arr[i].completedAt=arr[i].done?Date.now():null; }
+  if(t.dataset.act==='del'){ arr.splice(i,1); }
+  set('todos', arr); RENDERERS.today();
+});
+$('#addTodo').addEventListener('click', ()=>{
+  const title=$('#todoTitle').value.trim(); if(!title){ toast('写点内容再添加'); return; }
+  const arr=list('todos');
+  arr.push({ _id:uid(), title:title, desc:'', date:$('#todoDate').value||today(),
+    source:'manual', sourceKey:null, sourcePlanId:null, done:false, completedAt:null,
+    important:$('#todoImp').checked, planned:false, createdAt:Date.now() });
+  set('todos', arr); $('#todoTitle').value=''; $('#todoImp').checked=false;
+  RENDERERS.today(); toast('已添加');
+});
+$('#todoTitle').addEventListener('keydown', e=>{ if(e.key==='Enter') $('#addTodo').click(); });
+
+// ==================== 读书 ====================
+RENDERERS.reading = function(){
+  const books=list('books'), read=list('bookRead');
+  $('#bookCnt').textContent = books.length?books.length+' 本':'';
+  $('#readCnt').textContent = read.length?read.length+' 本':'';
+  const el=$('#bookList');
+  el.innerHTML = books.length ? books.map(b=>{
+    const pct = Math.max(0, Math.min(100, Math.round(b.progressPercent||0)));
+    return `<li>
+      <div class="li-main" style="flex:1">
+        <div class="li-title">${esc(b.title)} <span class="muted" style="font-weight:400">${esc(b.author||'')}</span></div>
+        <div class="bar"><span style="width:${pct}%"></span></div>
+        <div class="li-meta"><span>${pct}%</span><span>${(b.records||[]).length} 次打卡</span></div>
+      </div>
+      <div class="li-act">
+        <button class="btn ghost sm" data-act="prog" data-id="${b._id}">更新进度</button>
+        <button class="btn ghost sm" data-act="fin" data-id="${b._id}">读完</button>
+        <button class="x" data-act="del" data-id="${b._id}" title="删除">✕</button>
+      </div></li>`;
+  }).join('') : '<li><div class="empty" style="flex:1"><span class="big">📚</span>书架还空着</div></li>';
+
+  $('#readList').innerHTML = read.length ? read.map(b=>`
+    <li><div class="li-main"><div class="li-title">${esc(b.title)}</div>
+      <div class="li-meta"><span>${esc(b.author||'')}</span><span class="tag ok">已读完</span></div></div>
+      <div class="li-act"><button class="x" data-act="delread" data-id="${b._id}" title="删除">✕</button></div></li>`).join('')
+    : '<li><div class="empty" style="flex:1"><span class="big">🏆</span>读完的书会立在书脊墙上</div></li>';
+};
+$('#addBook').addEventListener('click', ()=>{
+  const title=$('#bookTitle').value.trim(); if(!title){ toast('填个书名'); return; }
+  const arr=list('books');
+  arr.push({ _id:uid(), title:title, author:$('#bookAuthor').value.trim(), progressType:'percent',
+    status:'reading', startDate:today(), deadline:null, color:'#534AB7', autoTodo:false,
+    records:[], progressPercent:0, createdAt:Date.now() });
+  set('books', arr); $('#bookTitle').value=''; $('#bookAuthor').value=''; RENDERERS.reading(); toast('已上架');
+});
+$('#bookList').addEventListener('click', e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return;
+  const id=t.dataset.id, arr=list('books'), i=arr.findIndex(x=>x._id===id); if(i<0) return;
+  if(t.dataset.act==='prog'){
+    const cur=Math.round(arr[i].progressPercent||0);
+    const v=prompt('当前进度 %（0-100）', cur);
+    if(v===null) return;
+    let n=Number(v); if(!Number.isFinite(n)){ toast('请输入数字'); return; }
+    n=Math.max(0, Math.min(100, Math.round(n)));
+    arr[i].progressPercent=n;
+    if(!Array.isArray(arr[i].records)) arr[i].records=[];
+    arr[i].records.push({ at:Date.now(), percent:n });
+    set('books', arr); RENDERERS.reading(); toast('进度 → '+n+'%');
+  }
+  if(t.dataset.act==='fin'){
+    const b=arr.splice(i,1)[0];
+    b.status='reading'; b.progressPercent=100; b.finishedAt=Date.now(); b.finishedDate=today();
+    const rl=list('bookRead'); rl.push(b); set('bookRead', rl);
+    set('books', arr); RENDERERS.reading(); toast('读完啦 🎉');
+  }
+  if(t.dataset.act==='del'){ arr.splice(i,1); set('books', arr); RENDERERS.reading(); }
+});
+$('#readList').addEventListener('click', e=>{
+  const t=e.target.closest('[data-act="delread"]'); if(!t) return;
+  const arr=list('bookRead').filter(x=>x._id!==t.dataset.id); set('bookRead', arr); RENDERERS.reading();
+});
+
+// ==================== 健身 ====================
+RENDERERS.fitness = function(){
+  const wo=list('workouts').slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'') || (b.createdAt||0)-(a.createdAt||0));
+  const bd=list('body').slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  $('#woCnt').textContent = wo.length?wo.length+' 次':'';
+  $('#bodyCnt').textContent = bd.length?bd.length+' 条':'';
+  if(!$('#woDate').value) $('#woDate').value=today();
+  if(!$('#bodyDate').value) $('#bodyDate').value=today();
+
+  $('#woList').innerHTML = wo.length ? wo.map(w=>`
+    <li><div class="chk ${w.completed?'on':''}" data-act="wotoggle" data-id="${w._id}">${w.completed?'✓':''}</div>
+      <div class="li-main"><div class="li-title ${w.completed?'done':''}">${esc(w.name)}</div>
+      <div class="li-meta"><span>${dayLabel(w.date)}</span>${w.volume?`<span>容量 ${w.volume}</span>`:''}</div></div>
+      <div class="li-act"><button class="x" data-act="wodel" data-id="${w._id}">✕</button></div></li>`).join('')
+    : '<li><div class="empty" style="flex:1"><span class="big">🏋️</span>还没有训练记录</div></li>';
+
+  $('#bodyList').innerHTML = bd.length ? bd.slice(0,20).map(b=>`
+    <li><div class="li-main"><div class="li-title">${b.weight!=null?b.weight+' kg':'—'}${b.fat!=null?` <span class="muted">体脂 ${b.fat}%</span>`:''}</div>
+      <div class="li-meta"><span>${b.date}</span></div></div>
+      <div class="li-act"><button class="x" data-act="bodel" data-id="${b._id}">✕</button></div></li>`).join('')
+    : '<li><div class="empty" style="flex:1"><span class="big">⚖️</span>还没有身体数据</div></li>';
+};
+$('#addWo').addEventListener('click', ()=>{
+  const name=$('#woName').value.trim(); if(!name){ toast('填个训练名'); return; }
+  const arr=list('workouts');
+  arr.push({ _id:uid(), name:name, plan:'custom', date:$('#woDate').value||today(),
+    cycleDays:7, items:[], completed:false, completedAt:null, startedAt:null, volume:0, createdAt:Date.now() });
+  set('workouts', arr); $('#woName').value=''; RENDERERS.fitness(); toast('已记录');
+});
+$('#woList').addEventListener('click', e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return;
+  const arr=list('workouts'), i=arr.findIndex(x=>x._id===t.dataset.id); if(i<0) return;
+  if(t.dataset.act==='wotoggle'){ arr[i].completed=!arr[i].completed; arr[i].completedAt=arr[i].completed?Date.now():null; }
+  if(t.dataset.act==='wodel'){ arr.splice(i,1); }
+  set('workouts', arr); RENDERERS.fitness();
+});
+$('#addBody').addEventListener('click', ()=>{
+  const w=$('#bodyW').value.trim(), f=$('#bodyF').value.trim();
+  if(!w && !f){ toast('至少填体重或体脂'); return; }
+  const arr=list('body');
+  arr.push({ _id:uid(), date:$('#bodyDate').value||today(),
+    weight: w?Number(w):undefined, fat: f?Number(f):null, createdAt:Date.now() });
+  set('body', arr); $('#bodyW').value=''; $('#bodyF').value=''; RENDERERS.fitness(); toast('已记录');
+});
+$('#bodyList').addEventListener('click', e=>{
+  const t=e.target.closest('[data-act="bodel"]'); if(!t) return;
+  set('body', list('body').filter(x=>x._id!==t.dataset.id)); RENDERERS.fitness();
+});
+
+// ==================== 学习 ====================
+RENDERERS.learning = function(){
+  const sk=list('skills'), ac=list('skillAchieved');
+  $('#skillCnt').textContent = sk.length?sk.length+' 项':'';
+  $('#achCnt').textContent = ac.length?ac.length+' 枚':'';
+  $('#skillList').innerHTML = sk.length ? sk.map(s=>{
+    const recs=(s.records||[]).length, cyc=s.cycleDays||21;
+    const pct=Math.min(100, Math.round(recs/cyc*100));
+    return `<li><div class="li-main" style="flex:1">
+      <div class="li-title">${esc(s.name)}</div>
+      <div class="bar"><span style="width:${pct}%"></span></div>
+      <div class="li-meta"><span>${recs}/${cyc} 天</span>${s.goal?`<span>${esc(s.goal)}</span>`:''}</div></div>
+      <div class="li-act">
+        <button class="btn ghost sm" data-act="hit" data-id="${s._id}">打卡</button>
+        <button class="btn ghost sm" data-act="done" data-id="${s._id}">达成</button>
+        <button class="x" data-act="del" data-id="${s._id}">✕</button></div></li>`;
+  }).join('') : '<li><div class="empty" style="flex:1"><span class="big">🎯</span>还没有在学的技能</div></li>';
+
+  $('#achList').innerHTML = ac.length ? ac.map(s=>`
+    <li><div class="li-main"><div class="li-title">${esc(s.name)}</div>
+      <div class="li-meta"><span class="tag ok">已达成</span>${s.achievedAt?`<span>${new Date(s.achievedAt).toLocaleDateString('zh-CN')}</span>`:''}</div></div>
+      <div class="li-act"><button class="x" data-act="delac" data-id="${s._id}">✕</button></div></li>`).join('')
+    : '<li><div class="empty" style="flex:1"><span class="big">🏅</span>达成的技能进图鉴</div></li>';
+};
+$('#addSkill').addEventListener('click', ()=>{
+  const name=$('#skillName').value.trim(); if(!name){ toast('填个技能名'); return; }
+  const cyc=Number($('#skillCycle').value)||21;
+  const arr=list('skills');
+  arr.push({ _id:uid(), name:name, goal:'', icon:'', cycleDays:Math.max(1,cyc), color:'#534AB7',
+    status:'learning', stages:[], records:[], achievedAt:null, createdAt:Date.now() });
+  set('skills', arr); $('#skillName').value=''; $('#skillCycle').value=''; RENDERERS.learning(); toast('开始学习');
+});
+$('#skillList').addEventListener('click', e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return;
+  const arr=list('skills'), i=arr.findIndex(x=>x._id===t.dataset.id); if(i<0) return;
+  if(t.dataset.act==='hit'){
+    if(!Array.isArray(arr[i].records)) arr[i].records=[];
+    arr[i].records.push({ at:Date.now(), date:today() });
+    set('skills', arr); RENDERERS.learning(); toast('打卡 +1');
+  }
+  if(t.dataset.act==='done'){
+    const s=arr.splice(i,1)[0]; s.status='achieved'; s.achievedAt=Date.now();
+    const al=list('skillAchieved'); al.push(s); set('skillAchieved', al);
+    set('skills', arr); RENDERERS.learning(); toast('达成 🏅');
+  }
+  if(t.dataset.act==='del'){ arr.splice(i,1); set('skills', arr); RENDERERS.learning(); }
+});
+$('#achList').addEventListener('click', e=>{
+  const t=e.target.closest('[data-act="delac"]'); if(!t) return;
+  set('skillAchieved', list('skillAchieved').filter(x=>x._id!==t.dataset.id)); RENDERERS.learning();
+});
+
+// ==================== 我的 ====================
+function humanSize(n){ return n>=1048576?(n/1048576).toFixed(1)+' MB': n>=1024?(n/1024).toFixed(1)+' KB': n+' B'; }
+RENDERERS.profile = function(){
+  let total=0;
+  const cells = DATA_KEYS.map(k=>{ const n=list(k).length; total+=n; return [n, {books:'在读书籍',bookRead:'已读书籍',skills:'在学技能',skillAchieved:'已达技能',workouts:'训练记录',body:'身体数据',todos:'待办',countdown:'倒计时',templates:'训练模板'}[k]]; });
+  const bytes = new Blob([snapshotText()]).size;
+  $('#profileStats').innerHTML = cells.map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('')
+    + `<div class="stat"><div class="n">${total}</div><div class="l">总记录数</div></div>`
+    + `<div class="stat"><div class="n" style="font-size:17px">${humanSize(bytes)}</div><div class="l">备份体积</div></div>`;
+};
+function logLine(msg){
+  const el=$('#log'); el.hidden=false;
+  el.textContent += (el.textContent?'\n':'') + '· ' + msg;
+  el.scrollTop = el.scrollHeight;
+}
+function download(name, text){
+  const blob=new Blob([text],{type:'application/json;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function backupName(){ const d=new Date(),p=n=>(n<10?'0':'')+n; return '宝哥工作台备份_'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'.json'; }
+
+$('#expBtn').addEventListener('click', ()=>{
+  const text=snapshotText();
+  download(backupName(), text);
+  logLine('已导出 ' + backupName() + '（' + humanSize(new Blob([text]).size) + '，checksum ' + buildSnapshot().checksum + '）');
+  toast('备份已导出');
+});
+function doImportText(text){
+  try{
+    const r=importSnapshotText(text);
+    logLine('导入成功：共 ' + r.total + ' 条' + (r.skippedKeys.length?('，跳过未包含的表 '+r.skippedKeys.join('/')):''));
+    r.warnings.forEach(w=>logLine('⚠ ' + w));
+    RENDERERS.profile(); RENDERERS[curView] && RENDERERS[curView]();
+    toast('导入成功：' + r.total + ' 条');
+  }catch(e){ logLine('✗ 导入失败：' + e.message); toast('导入失败：' + e.message); }
+}
+$('#impBtn').addEventListener('click', ()=> $('#fileInput').click());
+$('#fileInput').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader(); rd.onload=()=>doImportText(rd.result); rd.readAsText(f,'utf-8');
+  e.target.value='';
+});
+$('#pasteBtn').addEventListener('click', async ()=>{
+  try{
+    const txt = await navigator.clipboard.readText();
+    if(!txt.trim()){ toast('剪贴板是空的'); return; }
+    doImportText(txt);
+  }catch(e){ toast('读剪贴板被拒（需在 https 或授权页面）'); }
+});
+const dz=$('#dropZone');
+dz.addEventListener('click', ()=> $('#fileInput').click());
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over');}));
+dz.addEventListener('drop', e=>{
+  const f=e.dataTransfer.files[0]; if(!f){ toast('没读到文件'); return; }
+  const rd=new FileReader(); rd.onload=()=>doImportText(rd.result); rd.readAsText(f,'utf-8');
+});
+$('#clearAll').addEventListener('click', ()=>{
+  if(!confirm('确定清空全部业务数据？此操作不可撤销，建议先导出备份。')) return;
+  DATA_KEYS.forEach(k=> localStorage.removeItem(KEYS[k]));
+  logLine('已清空全部数据');
+  RENDERERS.profile(); RENDERERS[curView] && RENDERERS[curView]();
+  toast('已清空');
+});
+$('#fillDemo').addEventListener('click', ()=>{
+  if(!confirm('载入示例数据会覆盖当前业务数据，继续？')) return;
+  const d=today();
+  set('todos', [
+    { _id:uid(), title:'读完《置身事内》第三章', desc:'', date:d, source:'reading', done:false, important:true, planned:false, createdAt:Date.now()-3000 },
+    { _id:uid(), title:'推胸 + 三头', desc:'', date:d, source:'fitness', done:false, important:false, planned:false, createdAt:Date.now()-2000 },
+    { _id:uid(), title:'整理这周的工作复盘', desc:'', date:d, source:'manual', done:true, completedAt:Date.now(), important:false, planned:false, createdAt:Date.now()-1000 }
+  ]);
+  set('books', [{ _id:uid(), title:'置身事内', author:'兰小欢', progressType:'percent', status:'reading', startDate:d, color:'#534AB7', autoTodo:true, records:[{at:Date.now(),percent:42}], progressPercent:42, createdAt:Date.now() }]);
+  set('workouts', [{ _id:uid(), name:'胸 + 三头', plan:'custom', date:d, cycleDays:7, items:[], completed:false, volume:0, createdAt:Date.now() }]);
+  set('body', [{ _id:uid(), date:d, weight:72.5, fat:19.2, createdAt:Date.now() }]);
+  set('skills', [{ _id:uid(), name:'摄影基础', goal:'会用光圈优先拍人像', icon:'', cycleDays:21, color:'#534AB7', status:'learning', stages:[], records:[{at:Date.now()}], createdAt:Date.now() }]);
+  set('skillAchieved', [{ _id:uid(), name:'游泳 1000 米', goal:'', icon:'', cycleDays:30, color:'#534AB7', status:'achieved', stages:[], achievedAt:Date.now(), createdAt:Date.now() }]);
+  logLine('已载入示例数据');
+  RENDERERS.profile(); RENDERERS[curView] && RENDERERS[curView](); toast('示例数据已载入');
+});
+
+// ==================== 主题 ====================
+function applyTheme(dark){
+  document.body.classList.toggle('theme-dark', !!dark);
+  const s=(JSON.parse(localStorage.getItem(KEYS.settings)||'{}')); s.dark=!!dark;
+  localStorage.setItem(KEYS.settings, JSON.stringify(s));
+  $('#themeBtn').textContent = dark?'☀':'◐';
+}
+$('#themeBtn').addEventListener('click', ()=>{
+  applyTheme(!document.body.classList.contains('theme-dark'));
+});
+
+// ==================== 启动 ====================
+(function init(){
+  let s={}; try{ s=JSON.parse(localStorage.getItem(KEYS.settings)||'{}'); }catch(e){}
+  applyTheme(s.dark);
+  const v=(location.hash||'').replace('#','');
+  show(['today','reading','fitness','learning','profile'].indexOf(v)>=0?v:'today');
+  const total = DATA_KEYS.reduce((a,k)=>a+list(k).length, 0);
+  $('#hSub').textContent = total ? ('本机已存 ' + total + ' 条数据 · 与小程序备份互通') : '数据存在本机浏览器 · 与小程序备份互通';
+})();
+</script>
+</body>
+</html>

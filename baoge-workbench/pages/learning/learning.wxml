@@ -1,0 +1,189 @@
+<view class="page {{themeDark}}">
+  <!-- 导出成长笔记 -->
+  <view class="export-bar">
+    <view class="export-link" bindtap="exportNotes">⬇ 导出技能笔记 · Markdown</view>
+  </view>
+
+  <!-- 在学 -->
+  <view class="section-title">在学技能 <text class="meta">{{skills.length}} 项</text></view>
+
+  <block wx:if="{{skills.length}}">
+    <view wx:for="{{skills}}" wx:key="_id" class="card skill-card" bindlongpress="skillAction" data-id="{{item._id}}">
+      <view class="skill-head">
+        <view class="skill-icon" style="background:{{item.color}};" data-id="{{item._id}}" bindlongpress="delSkill">{{item.icon}}</view>
+        <view class="skill-info">
+          <view class="skill-name">{{item.name}}</view>
+          <view class="skill-goal">目标：{{item.goal || '未设定'}}</view>
+        </view>
+        <view class="ring" style="background: conic-gradient(var(--c-learning) {{item.percent}}%, #EAE7DF 0);">
+          <view class="ring-hole">{{item.doneCount}}/{{item.stages.length}}</view>
+        </view>
+      </view>
+
+      <view class="progress mt-20"><view class="progress-bar learning" style="width:{{item.percent}}%"></view></view>
+      <view class="muted mt-20">{{item.doneCount}}/{{item.stages.length}} 阶段完成</view>
+      <view wx:if="{{item.cycleText}}" class="skill-cycle">⏳ {{item.cycleText}} · {{item.weeklyHint}}</view>
+
+      <view class="stage-list">
+        <view wx:for="{{item.stages}}" wx:for-item="st" wx:for-index="si" wx:key="*this"
+              class="stage {{st.done ? 'stage-done' : ''}}"
+              data-skill="{{item._id}}" data-idx="{{si}}"
+              bindlongpress="stageAction">
+          <!-- 左圆圈 = 点灯（与首页待办圆圈一致）；catchtap 防止冒泡到正文 -->
+          <view class="stage-dot {{st.done ? 'checked' : ''}}" catchtap="toggleStage"
+                data-skill="{{item._id}}" data-idx="{{si}}">{{st.done ? '✓' : ''}}</view>
+          <!-- 正文 = 展开阶段详情 / 补里程碑备注 -->
+          <view class="stage-body" bindtap="openStageDetail" data-skill="{{item._id}}" data-idx="{{si}}">
+            <view class="stage-name">{{st.name}}</view>
+            <view wx:if="{{st.doneDate}}" class="stage-date">✓ {{st.doneDate}} 完成</view>
+            <view wx:elif="{{st.logCount}}" class="stage-log">📝 {{st.logCount}} 条里程碑</view>
+          </view>
+        </view>
+        <view class="stage-add" bindtap="addStageToSkill" data-id="{{item._id}}">＋ 加一个阶段</view>
+      </view>
+
+      <!-- 成长记录时间线（与读书一致） -->
+      <view class="record-entry" data-id="{{item._id}}" bindtap="addSkillRecord">
+        📝 写成长记录<text wx:if="{{item.recordCount}}" class="rec-tag">· 已记 {{item.recordCount}} 条</text>
+      </view>
+      <view wx:if="{{item.recordCount}}" class="rec-toggle" data-id="{{item._id}}" bindtap="toggleSkillRecords">
+        {{item.recExpanded ? '收起记录' : '查看时间线（' + item.recordCount + '）'}}
+      </view>
+      <view wx:if="{{item.recExpanded && item.recordCount}}" class="record-list">
+        <view wx:for="{{item.recViews}}" wx:for-item="rec" wx:key="createdAt" class="record-line">
+          <view class="rec-dot"></view>
+          <view class="rec-body">
+            <view class="rec-meta">{{rec.date}}</view>
+            <view wx:if="{{rec.note}}" class="rec-note">{{rec.note}}</view>
+          </view>
+          <view class="rec-del" data-id="{{item._id}}" data-ca="{{rec.createdAt}}" catchtap="deleteSkillRecord">删</view>
+        </view>
+        <view class="rec-count muted">共 {{item.recordCount}} 条 · 点上面收起</view>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="empty">
+    <view class="emoji">🎯</view>
+    <view>还没立技能 · 立第一项吧</view>
+    <view class="muted">建议"可衡量、有终点"的目标</view>
+  </view>
+
+  <!-- 已达成 -->
+  <view class="section-title mt-32">🏆 技能图鉴 <text class="meta">{{badges.length}} 枚</text></view>
+
+  <view wx:if="{{badges.length}}" class="badge-grid">
+    <view wx:for="{{badges}}" wx:key="_id" class="badge" style="background:{{item.color}};"
+          data-id="{{item._id}}" bindtap="openBadge" bindlongpress="delBadge">
+      <view class="badge-icon">{{item.icon}}</view>
+      <view class="badge-name">{{item.name}}</view>
+      <view class="badge-date">{{item.dateLabel}}</view>
+    </view>
+  </view>
+  <view wx:else class="empty" style="padding:48rpx 32rpx;">
+    <view class="muted">全部阶段点亮后，技能徽章会出现在这里</view>
+  </view>
+
+  <!-- FAB -->
+  <view class="fab" bindtap="addSkill">＋</view>
+
+  <!-- ===== 单表单：新建 / 编辑技能 ===== -->
+  <view wx:if="{{form.show}}" class="mask" bindtap="closeForm">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">{{form.editId ? '编辑技能' : '＋ 新建技能'}}</view>
+
+      <view class="form-icon-block">
+        <view class="form-icon-label">知识 · 表达</view>
+        <view class="form-icon-row">
+          <view wx:for="{{iconRows[0]}}" wx:key="*this"
+                class="form-icon {{form.icon === item ? 'on' : ''}}"
+                data-icon="{{item}}" bindtap="pickFormIcon">{{item}}</view>
+        </view>
+        <view class="form-icon-label">生活 · 实践</view>
+        <view class="form-icon-row">
+          <view wx:for="{{iconRows[1]}}" wx:key="*this"
+                class="form-icon {{form.icon === item ? 'on' : ''}}"
+                data-icon="{{item}}" bindtap="pickFormIcon">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="sh-row">
+        <view class="sh-label">技能名称 <text class="fs-req">*必填</text></view>
+        <input class="sh-input" placeholder="如：商业人像布光" value="{{form.name}}" bindinput="onFormName"/>
+      </view>
+      <view class="sh-row">
+        <view class="sh-label">目标（选填）</view>
+        <input class="sh-input" placeholder="可衡量的成果，如：独立棚拍一组客片" value="{{form.goal}}" bindinput="onFormGoal"/>
+      </view>
+      <view class="sh-row">
+        <view class="sh-label">预计周期（天 · 选填）</view>
+        <input class="sh-input" type="number" placeholder="如 30（仅显示节奏，不惩罚）" value="{{form.cycleDays}}" bindinput="onFormCycle"/>
+      </view>
+      <view class="sh-label">拆解阶段 <text class="fs-req">*至少一项（输入即自动新增）</text></view>
+      <view wx:for="{{form.stages}}" wx:key="*this" wx:for-index="fi" class="stage-edit-row">
+        <input class="sh-input" placeholder="阶段名，如：单灯练习" value="{{item}}"
+               data-idx="{{fi}}" bindinput="onStageInput"/>
+        <view class="stage-del" data-idx="{{fi}}" bindtap="removeStage">✕</view>
+      </view>
+      <view class="stage-add sm" bindtap="addStage">＋ 再加一个阶段</view>
+      <view wx:if="{{!form.editId}}" class="tpl-apply" bindtap="openStageTemplates">⚡ 套用阶段模板</view>
+
+      <view wx:if="{{form.error}}" class="form-err">{{form.error}}</view>
+
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="closeForm">取消</view>
+        <view class="sh-btn main" bindtap="saveForm">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 阶段详情 / 里程碑备注 ===== -->
+  <view wx:if="{{stageDetail}}" class="mask" bindtap="closeStageDetail">
+    <view class="sheet" catchtap="noop">
+      <view class="sh-title">{{stageDetail.name}} <text class="sh-sub">{{stageDetail.done ? '· 已完成' : ''}}</text></view>
+      <view wx:if="{{stageDetail.doneDate}}" class="sh-label">完成日期：{{stageDetail.doneDate}}</view>
+      <view class="sh-label">里程碑备注（做了什么 / 交付物 / 心得）</view>
+      <textarea class="sh-area" placeholder="记一笔这个阶段的关键产出…" value="{{stageDetail.note}}"
+                bindinput="onStageNoteInput" auto-height maxlength="300"></textarea>
+
+      <view wx:if="{{stageDetail.logs.length}}" class="log-list">
+        <view wx:for="{{stageDetail.logs}}" wx:key="date" wx:for-item="lg" class="log-line">
+          <view class="log-date">{{lg.date}}</view>
+          <view class="log-text">{{lg.text}}</view>
+        </view>
+      </view>
+
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="closeStageDetail">关闭</view>
+        <view class="sh-btn main" bindtap="saveStageNote">保存备注</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 达成回顾卡 ===== -->
+  <view wx:if="{{badgeDetail}}" class="mask" bindtap="closeBadge">
+    <view class="detail-card" catchtap="noop">
+      <view class="detail-color" style="background:{{badgeDetail.color}};"></view>
+      <view class="detail-title">{{badgeDetail.name}}</view>
+      <view class="muted">{{badgeDetail.icon}} {{badgeDetail.usedDays}} · {{badgeDetail.dateLabel}} 达成</view>
+      <view wx:if="{{badgeDetail.createdAtLabel}}" class="detail-meta">🗓 创建于 {{badgeDetail.createdAtLabel}}</view>
+
+      <view class="detail-review-title">🏆 达成回顾 · {{badgeDetail.stageCount}} 个阶段</view>
+      <view class="rev-scroll">
+        <view wx:for="{{badgeDetail.stageViews}}" wx:key="name" wx:for-item="sv" class="rev-stage">
+          <view class="rev-stage-name">{{sv.name}}<text wx:if="{{sv.doneAtLabel}}" class="rev-done-at"> ✓ {{sv.doneAtLabel}}</text></view>
+          <view wx:if="{{sv.logs.length}}" class="rev-logs">
+            <view wx:for="{{sv.logs}}" wx:key="date" wx:for-item="lg" class="rev-log">· {{lg.date}} {{lg.text}}</view>
+          </view>
+          <view wx:else class="muted rev-empty">（无里程碑备注）</view>
+        </view>
+      </view>
+
+      <view class="sh-actions">
+        <view class="sh-btn ghost" bindtap="shareBadge">分享成就卡</view>
+        <view class="sh-btn main" bindtap="closeBadge">收 起</view>
+      </view>
+      <view wx:if="{{badgeShareTip}}" class="muted" style="text-align:center;margin-top:12rpx;">已复制到剪贴板</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,737 @@
+/* pages/reading/reading.wxss */
+
+.page {
+  padding: 32rpx;
+  padding-bottom: 160rpx;
+}
+
+/* 视图切换 */
+.switch {
+  display: flex;
+  background: rgba(0,0,0,0.04);
+  border-radius: 12rpx;
+  padding: 6rpx;
+  margin-bottom: 24rpx;
+}
+.sw-item {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  font-size: 28rpx;
+  color: var(--c-text-2);
+  border-radius: 10rpx;
+}
+.sw-item.active {
+  background: #fff;
+  color: var(--c-text);
+  font-weight: 500;
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.06);
+}
+.sw-n {
+  display: inline-block;
+  margin-left: 8rpx;
+  font-size: 22rpx;
+  color: var(--c-text-3);
+  font-weight: 400;
+}
+
+/* 书架 hero */
+.shelf-hero { background: var(--c-bookshelf); }
+.hero-title { font-size: 26rpx; color: var(--c-text-2); margin-bottom: 8rpx; }
+.hero-num {
+  font-size: 56rpx;
+  font-weight: 500;
+  color: var(--c-reading);
+  line-height: 1.1;
+  margin-bottom: 16rpx;
+}
+.pct {
+  font-size: 28rpx;
+  color: var(--c-text-2);
+  font-weight: 400;
+  margin-left: 4rpx;
+}
+
+/* 书架条目 */
+.book-card {
+  position: relative;
+  padding-left: 36rpx;
+}
+.book-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+.book-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.book-subtle { font-size: 22rpx; }
+.book-title {
+  font-size: 32rpx;
+  font-weight: 500;
+}
+.book-pct {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--c-reading);
+}
+.book-sub {
+  font-size: 22rpx;
+  color: var(--c-text-3);
+  margin-top: 8rpx;
+}
+
+/* P1：记一笔入口 */
+.record-entry {
+  margin-top: 16rpx;
+  padding: 14rpx 18rpx;
+  background: #F4F8FC;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: #185FA5;
+}
+.rec-tag {
+  margin-left: 8rpx;
+  font-size: 22rpx;
+  color: var(--c-text-3);
+}
+
+/* P1：阅读时间线 */
+.record-list {
+  margin-top: 16rpx;
+  padding: 18rpx 20rpx;
+  background: #FAFAF6;
+  border-radius: 10rpx;
+  max-height: 44vh;        /* 记录过长时上下滚动 */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.record-line {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 14rpx;
+}
+.record-line:last-child { margin-bottom: 4rpx; }
+.rec-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--c-reading);
+  margin-top: 10rpx;
+  margin-right: 14rpx;
+  flex-shrink: 0;
+}
+.rec-body { flex: 1; min-width: 0; }
+.rec-meta {
+  font-size: 22rpx;
+  color: var(--c-text-3);
+}
+.rec-note {
+  font-size: 26rpx;
+  color: var(--c-text);
+  margin-top: 4rpx;
+  line-height: 1.5;
+}
+.rec-count {
+  font-size: 22rpx;
+  margin-top: 10rpx;
+  text-align: right;
+}
+
+.book-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+.act-btn {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  border: 0.5px solid var(--c-divider);
+  border-radius: 10rpx;
+  font-size: 24rpx;
+  color: var(--c-text-2);
+}
+.act-finish {
+  background: var(--c-reading);
+  color: #fff;
+  border-color: var(--c-reading);
+}
+
+/* 书墙 */
+.wall-hero {
+  background: var(--c-bookshelf);
+  border-radius: 14px;
+  padding: 28rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+.wall-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #5C4A1F;
+}
+.wall-sub {
+  font-size: 24rpx;
+  color: var(--c-text-2);
+  margin-top: 6rpx;
+}
+
+/* P3：激励统计卡 */
+.stat-hero {
+  background: linear-gradient(135deg, #EAF3FB 0%, #F1EFE8 100%);
+  margin-bottom: 20rpx;
+}
+.stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx 4rpx;
+}
+.stat-cell {
+  flex: 1;
+  text-align: center;
+}
+.stat-num {
+  font-size: 44rpx;
+  font-weight: 500;
+  color: #378ADD;
+  line-height: 1.1;
+}
+.stat-lab {
+  font-size: 22rpx;
+  color: var(--c-text-2);
+  margin-top: 6rpx;
+}
+.stat-div {
+  width: 1px;
+  height: 48rpx;
+  background: rgba(0,0,0,0.08);
+}
+
+.book-wall {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6rpx;
+  padding: 32rpx 16rpx;
+  background: linear-gradient(180deg, #efeadb 0%, #f1efe8 30%, #f1efe8 100%);
+  border-radius: 14px;
+  min-height: 320rpx;
+  position: relative;
+}
+/* 仿木纹地板线 */
+.book-wall::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 18rpx;
+  background: linear-gradient(90deg,
+    #cbb88f 0%, #d8c69d 25%, #c4ad7e 50%, #d6c094 75%, #c8b283 100%);
+  border-radius: 0 0 14px 14px;
+}
+
+.spine {
+  width: 60rpx;
+  min-height: 220rpx;
+  border-radius: 4rpx 4rpx 0 0;
+  padding: 16rpx 6rpx;
+  color: rgba(255,255,255,0.92);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.15);
+  animation: spine-rise 0.5s ease-out;
+}
+.spine-title {
+  font-size: 22rpx;
+  font-weight: 500;
+  writing-mode: vertical-rl;
+  letter-spacing: 2rpx;
+  line-height: 1.2;
+  text-align: center;
+  max-height: 180rpx;
+  overflow: hidden;
+}
+.spine-foot {
+  font-size: 16rpx;
+  opacity: 0.7;
+}
+
+/* 1.4：书多时书墙限高竖向滚动，统计/排序头始终固定，保持浏览体验 */
+.book-wall.wall-scroll {
+  max-height: 58vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 1.1：加书表单「目标读完日」日期选择入口（复用 sh-input 视觉） */
+.sh-input.picker {
+  display: flex;
+  align-items: center;
+  min-height: 72rpx;
+  color: var(--c-text);
+}
+.sh-input.picker.ph {
+  color: var(--c-text-3);
+}
+
+@keyframes spine-rise {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* P2：读后详情弹层（.mask 基座已上提 app.wxss） */
+/* 加书 / 书评 弹层：主题色用阅读蓝，仅保留本页差异 */
+.sh-sub { font-size: 22rpx; color: var(--c-text-3); margin-left: 8rpx; }
+.sh-label { margin-top: 20rpx; }
+.sh-btn.main { background: var(--c-reading); color: #fff; }
+.fs-req { color: #E24B4A; font-size: 19rpx; margin-left: 6rpx; }
+
+.detail-card {
+  width: 100%;
+  max-width: 600rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 36rpx 32rpx 28rpx;
+  position: relative;
+  overflow: hidden;
+}
+.detail-color {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  height: 10rpx;
+}
+.detail-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  margin-top: 8rpx;
+}
+.detail-author {
+  font-size: 24rpx;
+  margin-top: 6rpx;
+}
+.detail-rating {
+  font-size: 32rpx;
+  color: #F5A623;
+  letter-spacing: 4rpx;
+  margin-top: 16rpx;
+}
+.detail-meta {
+  font-size: 24rpx;
+  color: var(--c-text-2);
+  margin-top: 8rpx;
+}
+.detail-review {
+  margin-top: 18rpx;
+  padding: 20rpx;
+  background: #F7F5EE;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  color: var(--c-text);
+  line-height: 1.6;
+}
+.detail-review.muted {
+  color: var(--c-text-3);
+  font-size: 24rpx;
+}
+.detail-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+.act-danger {
+  color: #E24B4A;
+  border-color: #E24B4A;
+}
+
+/* ===== v0.5 新增 ===== */
+
+/* 导出入口 */
+.export-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin: -8rpx 0 16rpx;
+}
+.export-link {
+  font-size: 22rpx;
+  color: var(--c-reading);
+  padding: 8rpx 16rpx;
+}
+
+/* 周报数字 */
+.wk-num {
+  color: var(--c-reading);
+  font-weight: 500;
+}
+
+/* 目标读完日 */
+.deadline {
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: #185FA5;
+  background: #F0F6FC;
+  display: inline-block;
+  padding: 6rpx 14rpx;
+  border-radius: 8rpx;
+}
+.deadline.overdue {
+  color: #E24B4A;
+  background: #FCEFEE;
+}
+
+/* 「读了一节」主按钮 */
+.act-tap {
+  background: #378ADD;
+  color: #fff;
+  border-color: #378ADD;
+}
+
+/* 书脊打星标记 */
+.spine-star {
+  font-size: 20rpx;
+  line-height: 1;
+  color: #FFD76A;
+  height: 20rpx;
+}
+
+/* 详情卡：书评标题 / 想法归档 */
+.detail-review-title {
+  margin-top: 18rpx;
+  font-size: 24rpx;
+  color: var(--c-text-2);
+  font-weight: 500;
+}
+.detail-notes {
+  margin-top: 4rpx;
+  max-height: 44vh;        /* 读书记录过长时上下滚动 */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.note-line {
+  margin-top: 12rpx;
+  padding: 12rpx 16rpx;
+  background: #F7F9FB;
+  border-radius: 8rpx;
+}
+.note-meta {
+  font-size: 20rpx;
+  color: var(--c-text-3);
+}
+.note-text {
+  font-size: 26rpx;
+  color: var(--c-text);
+  margin-top: 4rpx;
+  line-height: 1.5;
+}
+.rating-edit {
+  font-size: 20rpx;
+  color: var(--c-text-3);
+  margin-left: 12rpx;
+  letter-spacing: 0;
+}
+
+/* ===== 补记过去日期弹层 ===== */
+.date-sheet {
+  width: 520rpx;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32rpx;
+}
+.ds-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+.ds-pick {
+  background: var(--c-reading);
+  color: #fff;
+  text-align: center;
+  padding: 24rpx 0;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+}
+
+/* ===== 记进度选择面板（章/页/百分比 任选 + 读了一节快捷） ===== */
+.pp-sheet {
+  width: 560rpx;
+  background: #fff;
+  border-radius: 18rpx;
+  padding: 36rpx 32rpx 32rpx;
+}
+.pp-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+  word-break: break-all;
+}
+.pp-cur {
+  font-size: 24rpx;
+  text-align: center;
+  margin-top: 14rpx;
+}
+.pp-hint {
+  font-size: 24rpx;
+  color: var(--c-text-3);
+  margin: 30rpx 0 14rpx;
+}
+.pp-pick {
+  background: #F1EFE8;
+  color: var(--c-text);
+  padding: 22rpx 24rpx;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  text-align: center;
+}
+.pp-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 32rpx;
+}
+.pp-btn {
+  flex: 1;
+  text-align: center;
+  padding: 22rpx 0;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.pp-btn.ghost {
+  background: #F1EFE8;
+  color: var(--c-text-2);
+}
+.pp-btn.main {
+  background: var(--c-reading);
+  color: #fff;
+}
+
+/* ===== v0.7 定位滑块（快速记到某一位置）===== */
+.jump-val {
+  text-align: center;
+  font-size: 42rpx;
+  font-weight: 600;
+  color: var(--c-reading);
+  margin-top: 24rpx;
+  line-height: 1.3;
+}
+.jump-pct {
+  text-align: center;
+  margin-top: 8rpx;
+}
+.jump-slider {
+  margin: 32rpx 12rpx 4rpx;
+}
+/* 四按钮等宽（读了一节 / 定位 / 读完 / 管理） */
+.book-actions.act-4 { gap: 12rpx; }
+.book-actions.act-4 .act-btn {
+  padding: 14rpx 0;
+  font-size: 22rpx;
+  white-space: nowrap;
+}
+.act-seek {
+  border-color: #378ADD;
+  color: #185FA5;
+}
+
+/* ===== v0.9 新增 ===== */
+/* 搜索栏 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--c-card);
+  border: 0.5px solid var(--c-divider);
+  border-radius: 12rpx;
+  padding: 8rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+.search-input { flex: 1; font-size: 26rpx; }
+.search-clear { color: var(--c-text-3); font-size: 28rpx; padding-left: 14rpx; }
+
+/* 进度弧 */
+.book-arc {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 4rpx;
+}
+.book-arc-in {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.read-time {
+  font-size: 22rpx;
+  margin-top: 8rpx;
+}
+
+/* 阅读记录逐条删除 */
+.rec-del {
+  font-size: 22rpx;
+  color: var(--c-text-3);
+  background: #fff;
+  border: 0.5px solid var(--c-divider);
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+  margin-left: 12rpx;
+  flex-shrink: 0;
+}
+.note-del {
+  font-size: 20rpx;
+  color: var(--c-text-3);
+  margin-left: 12rpx;
+  flex-shrink: 0;
+}
+/* 阅读记录「查看全部 / 收起」 */
+.rec-toggle {
+  font-size: 21rpx;
+  color: var(--c-reading);
+  margin-top: 10rpx;
+  text-align: right;
+}
+
+/* 书墙排序 */
+.wall-sort {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+.wall-sort .seg-item {
+  font-size: 22rpx;
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  background: var(--c-bg);
+  color: var(--c-text-2);
+}
+.wall-sort .seg-item.on { background: var(--c-reading); color: #fff; }
+
+/* 加书单位选择 */
+.unit-row { display: flex; gap: 14rpx; margin: 12rpx 0 8rpx; }
+.unit-opt {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  background: var(--c-bg);
+  border: 0.5px solid var(--c-divider);
+  font-size: 26rpx;
+  color: var(--c-text-2);
+}
+.unit-opt.on { border-color: var(--c-reading); background: #EAF3FB; color: #185FA5; font-weight: 500; }
+
+/* 详情卡标签 */
+.detail-tags {
+  font-size: 22rpx;
+  color: var(--c-reading);
+  margin-top: 10rpx;
+}
+
+/* 计时按钮态 */
+.act-timing {
+  background: var(--c-warning);
+  color: #fff;
+  border-color: var(--c-warning);
+}
+
+/* 满 100% 上墙：评分选择（必填）*/
+.rating-pick {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  margin: 8rpx 0 4rpx;
+}
+.rt-star {
+  font-size: 48rpx;
+  line-height: 1;
+  color: #D9D4C7;
+  padding: 4rpx 2rpx;
+}
+.rt-star.on {
+  color: #F2B33D;
+}
+.rt-hint {
+  font-size: 22rpx;
+  color: var(--c-text-3);
+  margin-left: 10rpx;
+}
+
+/* ===== 书摘本（v0.9 新增） ===== */
+.excerpt-list { margin-top: 4rpx; }
+.excerpt-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 18rpx;
+}
+.excerpt-bar {
+  width: 10rpx;
+  flex-shrink: 0;
+}
+.excerpt-main {
+  flex: 1;
+  min-width: 0;
+  padding: 24rpx;
+}
+.excerpt-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.35;
+}
+.excerpt-sub {
+  font-size: 22rpx;
+  color: var(--c-text-2);
+  margin-top: 6rpx;
+}
+.excerpt-preview {
+  font-size: 24rpx;
+  color: var(--c-text-3);
+  margin-top: 12rpx;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.excerpt-go {
+  display: flex;
+  align-items: center;
+  padding: 0 24rpx;
+  font-size: 36rpx;
+  color: var(--c-text-3);
+}
+/* 离屏画布（图片卡片导出用） */
+.excerpt-canvas {
+  position: fixed;
+  left: -9999rpx;
+  top: 0;
+  width: 600px;
+}
+
+/* Round 9：自动待办门禁提示 */
+.form-hint {
+  margin: 6rpx 2rpx 0;
+  font-size: 21rpx;
+  color: var(--c-text-3, #8a8a8a);
+  line-height: 1.5;
+}

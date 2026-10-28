@@ -1,0 +1,253 @@
+/* app.wxss · 宝哥工作台 全局样式
+ * 设计系统：极简卡片 + 木质书架温暖感
+ * 颜色与圆角用 CSS 变量统一定义，页面按需覆盖
+ */
+
+page {
+  --c-bg:          #f7f5ee;     /* 主背景 · 暖米白 */
+  --c-card:        #ffffff;     /* 卡片背景 */
+  --c-text:        #2C2C2A;     /* 主文字 */
+  --c-text-2:      #5F5E5A;     /* 次级文字 */
+  --c-text-3:      #888780;     /* 辅助文字 */
+  --c-divider:     rgba(60,52,38,0.12);   /* 分隔线 */
+  --c-primary:     #534AB7;     /* 主色 · 学习紫 */
+  --c-reading:     #378ADD;     /* 读书蓝 */
+  --c-fitness:     #EF9F27;     /* 健身橙 */
+  --c-learning:    #1D9E75;     /* 学习绿 */
+  --c-today:       #E24B4A;     /* 今日红 */
+  --c-warning:     #D85A30;     /* 重要 */
+  --c-bookshelf:   #f1efe8;     /* 书架暖色 */
+  --c-bookshelf-2: #e3ddc9;     /* 书架木纹二色 */
+
+  --r-card: 14px;
+  --r-pill: 999px;
+
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+view, text { box-sizing: border-box; }
+
+/* 页面根容器：用 CSS 变量铺底，暗色模式切 .theme-dark 即可整体换肤 */
+.page { background: var(--c-bg); min-height: 100vh; }
+
+/* ===== 暗色模式变量（手动开关；开关状态存在 settings.dark） ===== */
+.theme-dark {
+  --c-bg:          #16161a;
+  --c-card:        #212128;
+  --c-text:        #ECECEC;
+  --c-text-2:      #B4B4BC;
+  --c-text-3:      #7E7E88;
+  --c-divider:     rgba(255,255,255,0.10);
+  --c-primary:     #8A7BFF;
+  --c-reading:     #5AAEFF;
+  --c-fitness:     #F2B15A;
+  --c-learning:    #3FCF9D;
+  --c-today:       #F2796E;
+  --c-warning:     #E8924A;
+  --c-bookshelf:   #2A2A30;
+  --c-bookshelf-2: #232329;
+}
+.theme-dark .progress { background: rgba(255,255,255,0.10); }
+.theme-dark .tag { background: rgba(255,255,255,0.08); color: var(--c-text-2); }
+.theme-dark .tag.reading { background: rgba(90,174,255,0.18); color: #9FCBFF; }
+.theme-dark .tag.fitness { background: rgba(242,177,90,0.18); color: #F2C68F; }
+.theme-dark .tag.learning { background: rgba(63,207,157,0.18); color: #74E3BE; }
+.theme-dark .tag.primary { background: rgba(138,123,255,0.18); color: #B6ACFF; }
+.theme-dark .tag.warning { background: rgba(242,121,110,0.18); color: #F5A99F; }
+
+/* ===== 通用卡片 ===== */
+.card {
+  background: var(--c-card);
+  border-radius: var(--r-card);
+  padding: 28rpx 32rpx;
+  margin-bottom: 20rpx;
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 30rpx;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+}
+.card-title .meta {
+  font-size: 24rpx;
+  color: var(--c-text-3);
+  font-weight: 400;
+}
+
+/* ===== 进度条 ===== */
+.progress {
+  width: 100%;
+  height: 12rpx;
+  background: rgba(0,0,0,0.06);
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 6rpx;
+  transition: width 0.4s ease;
+}
+.progress-bar.reading  { background: var(--c-reading); }
+.progress-bar.fitness  { background: var(--c-fitness); }
+.progress-bar.learning { background: var(--c-learning); }
+.progress-bar.primary  { background: var(--c-primary); }
+
+/* ===== 标签 pill ===== */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 22rpx;
+  padding: 4rpx 14rpx;
+  border-radius: var(--r-pill);
+  background: rgba(0,0,0,0.05);
+  color: var(--c-text-2);
+}
+.tag.reading   { background: #E6F1FB; color: #185FA5; }
+.tag.fitness   { background: #FAEEDA; color: #854F0B; }
+.tag.learning  { background: #E1F5EE; color: #0F6E56; }
+.tag.primary   { background: #EEEDFE; color: #534AB7; }
+.tag.warning   { background: #FAECE7; color: #A32D2D; }
+
+/* ===== 列表行 ===== */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 18rpx 0;
+  border-bottom: 0.5px solid var(--c-divider);
+}
+.row:last-child { border-bottom: none; }
+
+/* ===== 占位空状态 ===== */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 32rpx;
+  color: var(--c-text-3);
+  font-size: 26rpx;
+  text-align: center;
+}
+.empty .emoji {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+  opacity: 0.5;
+}
+
+/* ===== FAB / 按钮 =====
+ * 修复「加号偶发点不到」根因：
+ *  ① bottom 由 48rpx 抬到 140rpx，避开原生 TabBar 点击区（之前下半部压在 TabBar 上，tap 被 TabBar 吃掉）
+ *  ② z-index 由 9 升到 50：高于普通内容(0)，但低于各页遮罩层(100/200/999)，
+ *    这样弹层打开时 FAB 仍被遮罩盖住，不会误触；平时又能稳稳浮在内容之上
+ */
+.fab {
+  position: fixed;
+  right: 32rpx;
+  bottom: 140rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: var(--c-primary);
+  color: #fff;
+  font-size: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 20rpx rgba(83,74,183,0.35);
+  z-index: 50;
+}
+
+.btn-primary {
+  background: var(--c-primary);
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--c-text-2);
+  border: 0.5px solid var(--c-divider);
+  border-radius: 12rpx;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+/* ===== 弹层基座（各页共用：mask + sheet + 表单控件；页面仅覆盖主题色 .sh-btn.main） ===== */
+.mask {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.sheet {
+  width: 100%;
+  max-width: 620rpx;
+  max-height: 86vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 32rpx 32rpx 28rpx;
+}
+.sh-title { font-size: 32rpx; font-weight: 600; text-align: center; }
+.sh-row { margin-top: 24rpx; }
+.sh-row.between { display: flex; align-items: center; justify-content: space-between; }
+.sh-label { font-size: 23rpx; color: var(--c-text-2); margin-bottom: 10rpx; }
+.sh-input {
+  background: var(--c-bg);
+  border: 0.5px solid var(--c-divider);
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  font-size: 28rpx;
+}
+.sh-actions { display: flex; gap: 16rpx; margin-top: 30rpx; }
+.sh-btn {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: 0.5px solid transparent;
+}
+.sh-btn.ghost { background: var(--c-bg); color: var(--c-text-2); border-color: var(--c-divider); }
+.sh-btn.danger { color: #E24B4A; border-color: #E24B4A; background: transparent; }
+.sh-area {
+  background: var(--c-bg);
+  border: 0.5px solid var(--c-divider);
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  font-size: 26rpx;
+  width: 100%;
+  min-height: 120rpx;
+  margin-top: 10rpx;
+  box-sizing: border-box;
+}
+
+/* ===== 工具 ===== */
+.muted { color: var(--c-text-3); font-size: 24rpx; }
+.hr { height: 1px; background: var(--c-divider); margin: 20rpx 0; }
+.flex { display: flex; }
+.flex-1 { flex: 1; }
+.gap-12 { gap: 12rpx; }
+.gap-16 { gap: 16rpx; }
+.gap-20 { gap: 20rpx; }
+.mb-12 { margin-bottom: 12rpx; }
+.mb-20 { margin-bottom: 20rpx; }
+.mb-32 { margin-bottom: 32rpx; }
+.mt-20 { margin-top: 20rpx; }
