@@ -24,3 +24,6 @@ Thumbs.db
 
 # ===== 日志 =====
 *.log
+
+# WorkBuddy 会话数据 / AI 记忆（不入库）
+.workbuddy/
